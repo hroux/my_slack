@@ -1,0 +1,19 @@
+CC	=	gcc
+SRC	=	main.c
+NAME	=	testlib
+OBJ	=	$(SRC:%.c=%.o)
+LIBS	=	../libmy_extended.a
+RM	=	rm -rf
+CFLAGS	=	-W -Wall -Werror -g
+
+
+ALL	:	$(NAME)
+
+$(NAME)	:	$(OBJ)
+		$(CC) $(OBJ) $(LIBS) -o $(NAME) $(CFLAGS)
+
+clean	:
+		$(RM) $(OBJ)
+
+fclean	:	clean
+		$(RM) $(NAME)

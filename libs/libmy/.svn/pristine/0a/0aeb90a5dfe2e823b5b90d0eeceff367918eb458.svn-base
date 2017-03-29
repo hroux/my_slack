@@ -1,0 +1,7 @@
+create libmy_extended.a
+addlib liblist/liblist.a
+addlib libparse/libparse.a
+addlib libprintf/libprintf.a
+addlib liblog/liblog.a
+save
+end

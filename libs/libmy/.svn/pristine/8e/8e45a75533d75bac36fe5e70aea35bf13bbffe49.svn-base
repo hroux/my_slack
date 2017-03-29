@@ -1,0 +1,85 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <memory.h>
+#include "../libmy_extended.h"
+
+t_logger *Logger;
+
+int for_each_str(void *arg, void *data)
+{
+  if (arg == NULL)
+    my_printf("No arg specified\n");
+  else
+    my_printf("Argument of foreach is => %s\n", *(char **)arg);
+  
+  my_printf("Found string value: %s\n", *(char **)data);
+  return 1;
+}
+
+void set_port(void *value) {
+
+    t_list *values = (t_list *)value;
+    char *port = *(char **) values->get(values, 0)->data;
+
+    my_printf("Setting server port to => %s\n", port);
+}
+
+//int for_each_opt_value(void *arg, void *value) {
+//    printf("Option Value => %s\n", *(char **)value);
+//    return 1;
+//}
+
+//int for_each_arg(void *arg, void *data){
+//  printf("Argument => %s and arg => %d\n", *(char **)data, (int)arg);
+//    return 1;
+//}
+
+//int for_each_opt(void *opt) {
+//    t_option *option = (t_option *) opt;
+//
+//    printf("Option => %s\n", option->name);
+
+//    if (option->values != NULL)
+//        option->values->for_each(option->values, for_each_opt_value);
+
+//    return 1;
+//}
+
+void free_str(void *arg) {
+    free(*(char **)arg);
+}
+
+t_option_field g_options_fields[] = {
+        // Name, Shortcut, Description, Default Value, Required, Multiple Values
+        {"port", "p", "Set the server port", "8080", 1, 0, 0, set_port},
+        {NULL, NULL, NULL, NULL, 0, 0, 0, NULL}
+};
+
+//int main(int argc, char **argv) {
+int main() {
+  
+    t_list *str_list = create_list(sizeof(char *), free_str);
+
+    char *item1 = strdup("My first node");
+    char *item2 = strdup("My second node");
+
+    str_list->push(str_list, &item1);
+    str_list->push(str_list, &item2);
+  
+    char *leet = strdup("leet");
+    str_list->for_each(str_list, for_each_str, &leet);
+
+    //t_parser *parser = create_parser(argc, argv);
+
+    //parser->args->for_each(parser->args, for_each_arg);
+    //parser->options->for_each(parser->options, for_each_opt);
+
+    //Logger = create_logger(NULL);
+
+    //Logger->debug(Logger, "Test logger ==> %s\n", "passed");
+    
+    //if(!parser->validate(parser, g_options_fields))
+    //    return 1;
+
+    return 0;
+}
