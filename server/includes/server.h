@@ -23,7 +23,7 @@ typedef struct s_server {
 	t_list				*clients;
 	fd_set				readfs;
 
-    void (*start)();
+    int (*start)();
 
 } t_server;
 
@@ -34,10 +34,12 @@ typedef struct s_client {
 
 t_server    *create_server();
 void    server_init(t_server *);
-void start_server(t_server *);
+int start_server(t_server *);
 void create_client(t_server *);
 int on_client_message(void *, void *);
 int bind_client(void *, void *);
 void broadcast_msg(t_server *, char *, t_client *);
+void message_priver(t_server *this, char **msg, t_client *sender);
+char	**my_str_to_wordtab(char *str);
 
 #endif // __MY_SLACK_SERVER_H__

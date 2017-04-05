@@ -6,6 +6,8 @@ CFLAGS	=	-Wall -Wextra -Werror -g
 LIBS	=	libs/libmy/libmy_extended.a
 
 SERVER_SRC	=	server/main.c \
+				server/my_str_to_wordtab.c \
+				server/my_strlen.c \
 				server/server.c
 
 CLIENT_SRC	=	client/main.c

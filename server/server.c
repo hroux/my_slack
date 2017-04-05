@@ -40,7 +40,7 @@ void    server_init(t_server *this) {
     this->start = start_server;
 }
 
-void start_server(t_server *this) {
+int start_server(t_server *this) {
     int         fds;
 
     my_printf("Slack server running...\n");
@@ -58,6 +58,11 @@ void start_server(t_server *this) {
         if (FD_ISSET(this->listener, &this->readfs)) {
             create_client(this);
             FD_CLR(this->listener, &this->readfs);
+        }
+        if (FD_ISSET(0, &this->readfs))
+        {
+            close(4);
+            return (EXIT_SUCCESS);
         }
         this->clients->for_each(this->clients, on_client_message, this);
     }
@@ -103,6 +108,7 @@ void create_client(t_server *this) {
 int on_client_message(void *server, void *node) {
     char        buffer[MSG_LENGTH];
     char        deco_msg[128];
+    char        **message_decomposer;
     int         n;
     t_server    *s;
     t_client    *c ;
@@ -122,11 +128,44 @@ int on_client_message(void *server, void *node) {
         }
         buffer[n] = '\0';
         my_printf("Message => %s\n", buffer);
-        broadcast_msg(s, buffer, c);
+        message_decomposer = my_str_to_wordtab(buffer);
+        if (strcmp(message_decomposer[0],"/private") == 0)
+            {
+                //Ici la fonction qui envoie de message privé
+                message_priver(s, message_decomposer, c);
+            }
+        else{
+        broadcast_msg(s, buffer, c);}
         FD_CLR(c->socket, &s->readfs);
     }
 
     return 1;
+}
+
+void message_priver(t_server *this, char **msg_decomposer, t_client *sender)
+{
+    t_list_item *tmp;
+    //t_client    *client;
+    char        *full_msg;
+    //char        *msg;
+    my_printf("MESSAGE PRIVER \n");
+    tmp = this->clients->head;
+    if (tmp == NULL)
+        return;
+    if (sender != NULL) {
+        full_msg = malloc(sizeof(char) * (strlen(sender->name) +  strlen(msg_decomposer[2])));
+        sprintf(full_msg, "%s : %s", sender->name, msg_decomposer[2]);
+    }
+    else
+        full_msg = msg_decomposer[3];
+   /* while (tmp != NULL) {
+        client = (t_client *) tmp->data;
+        if (client != sender) {
+            send(client->socket, full_msg, strlen(full_msg), 0);
+        }
+        tmp = tmp->next;
+    }*/
+     tmp = tmp->next;
 }
 
 void broadcast_msg(t_server *this, char *msg, t_client *sender) {
