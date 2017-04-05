@@ -36,7 +36,7 @@ t_server    *create_server() {
 }
 
 void    server_init(t_server *this) {
-    this->clients = create_list(sizeof(t_client), NULL);
+    //this->clients = create_list(sizeof(t_client), NULL);
     this->start = start_server;
 }
 
@@ -44,7 +44,7 @@ void start_server(t_server *this) {
     int         fds;
 
     my_printf("Slack server running...\n");
-
+    this->clients = create_list(sizeof(t_client), NULL);
     while (1) {
         FD_ZERO(&this->readfs);
         FD_SET(0, &this->readfs);
@@ -151,4 +151,3 @@ void broadcast_msg(t_server *this, char *msg, t_client *sender) {
         tmp = tmp->next;
     }
 }
-
