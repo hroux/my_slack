@@ -172,6 +172,8 @@ void message_priver(t_server *this, t_message *message) {
     t_client    *client;
 
     tmp = this->clients->head;
+    if (strcmp(message->commande, "private") == 0)
+    {
     while (tmp != NULL)
     {
         test = (t_client *) tmp->data;
@@ -179,10 +181,13 @@ void message_priver(t_server *this, t_message *message) {
             client = test;
         tmp = tmp->next;
     }
-    if (client != NULL)
+    if (client->socket > 0)
     {
         full_msg = malloc(sizeof(char) * (strlen(message->auteur->name) + strlen(message->msg)));
-        sprintf(full_msg, "%s : %s", message->auteur->name, message->msg);
+        sprintf(full_msg, "%s : %s\n", message->auteur->name, message->msg);
         send(client->socket, full_msg, strlen(full_msg), 0);
+    }
+    else
+        send(message->auteur->socket, "Désoler mais cette utilisateur n'est pas connecter\n", 52, 0);
     }
 }

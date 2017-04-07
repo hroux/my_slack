@@ -26,7 +26,7 @@ int VerifMessage(char *buffer)
 	i = 0;
 	while (MessageDecomposer[i] != NULL)
 	i = i + 1;
-	if (i > 3 && valide == 1)
+	if (i > 2 && valide == 1)
 		return 1;
 	else
 		return 0;
