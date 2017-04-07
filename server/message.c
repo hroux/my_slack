@@ -32,7 +32,7 @@ int VerifMessage(char *buffer)
 		return 0;
 }
 
-t_message *Create_message(char *buffer)
+t_message *Create_message(char *buffer, t_client *client)
 {
 	t_message *message;
 	char	  **message_decomposer;
@@ -46,9 +46,11 @@ t_message *Create_message(char *buffer)
     message->commande = message_decomposer[0];
     message->cible = malloc(sizeof(message_decomposer[1]));
     message->cible = message_decomposer[1];
+    message->auteur = malloc(sizeof(client));
+    message->auteur = client;
 
-    my_printf("Message->msg = %s\n Message->commande = %s\n Message->cible = %s\n", message->msg, message->commande, message->cible);
-
+    my_printf("Message->msg = %s\n Message->commande = %s\n Message->cible = %s\n Message->auteur = %s\n",
+    message->msg, message->commande, message->cible, message->auteur);
     return message;
 }
 

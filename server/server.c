@@ -107,6 +107,7 @@ void create_client(t_server *this) {
 
 int on_client_message(void *server, void *node) {
     char        buffer[MSG_LENGTH];
+    t_message   *message;
     char        deco_msg[128];
     int         n;
     t_server    *s;
@@ -130,25 +131,14 @@ int on_client_message(void *server, void *node) {
         if (VerifMessage(buffer))
         {
             //envoie_private(s, buffer, c);
-            Create_message(buffer);
+           message = Create_message(buffer, c);
+           message_priver(s, message);
         }
         else
         broadcast_msg(s, buffer, c);
         FD_CLR(c->socket, &s->readfs);
     }
     return 1;
-}
-
-
-void    envoie_private(t_server *this, char *msg, t_client *sender)
-{
-    t_message *message;
-    message = malloc(sizeof(message));
-    msg = decode_msg(msg);
-    message->msg = malloc(sizeof(msg));
-    message->msg = msg;
-    my_printf("ICI : %s\n", message->msg);
-    broadcast_msg(this, msg, sender);
 }
 
 
@@ -172,5 +162,27 @@ void broadcast_msg(t_server *this, char *msg, t_client *sender) {
             send(client->socket, full_msg, strlen(full_msg), 0);
         }
         tmp = tmp->next;
+    }
+}
+
+void message_priver(t_server *this, t_message *message) {
+    char *full_msg;
+    t_list_item *tmp;
+    t_client    *test;
+    t_client    *client;
+
+    tmp = this->clients->head;
+    while (tmp != NULL)
+    {
+        test = (t_client *) tmp->data;
+        if (strcmp(test->name, message->cible) == 0)
+            client = test;
+        tmp = tmp->next;
+    }
+    if (client != NULL)
+    {
+        full_msg = malloc(sizeof(char) * (strlen(message->auteur->name) + strlen(message->msg)));
+        sprintf(full_msg, "%s : %s", message->auteur->name, message->msg);
+        send(client->socket, full_msg, strlen(full_msg), 0);
     }
 }
