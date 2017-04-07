@@ -8,7 +8,8 @@ LIBS	=	libs/libmy/libmy_extended.a
 SERVER_SRC	=	server/main.c \
 				server/my_str_to_wordtab.c \
 				server/my_strlen.c \
-				server/server.c
+				server/server.c \
+				server/message.c
 
 CLIENT_SRC	=	client/main.c
 

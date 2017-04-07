@@ -32,6 +32,13 @@ typedef struct s_client {
 	int 	socket;
 } t_client;
 
+typedef struct s_message {
+	char	*msg;
+	char	*auteur;
+	char	*cible;
+	char	*commande;
+} t_message;
+
 t_server    *create_server();
 void    server_init(t_server *);
 int start_server(t_server *);
@@ -41,5 +48,10 @@ int bind_client(void *, void *);
 void broadcast_msg(t_server *, char *, t_client *);
 void message_priver(t_server *this, char **msg, t_client *sender);
 char	**my_str_to_wordtab(char *str);
+int     Est_priver(char *buffer);
+void    envoie_private(t_server *this, char *msg, t_client *sender);
+char    *decode_msg(char *buffer);
+int VerifMessage(char *buffer);
+t_message *Create_message(char *buffer);
 
 #endif // __MY_SLACK_SERVER_H__

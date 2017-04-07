@@ -108,10 +108,9 @@ void create_client(t_server *this) {
 int on_client_message(void *server, void *node) {
     char        buffer[MSG_LENGTH];
     char        deco_msg[128];
-    char        **message_decomposer;
     int         n;
     t_server    *s;
-    t_client    *c ;
+    t_client    *c;
 
     s = (t_server *) server;
     c = (t_client *) ((t_list_item *) node)->data;
@@ -128,45 +127,30 @@ int on_client_message(void *server, void *node) {
         }
         buffer[n] = '\0';
         my_printf("Message => %s\n", buffer);
-        message_decomposer = my_str_to_wordtab(buffer);
-        if (strcmp(message_decomposer[0],"/private") == 0)
-            {
-                //Ici la fonction qui envoie de message privé
-                message_priver(s, message_decomposer, c);
-            }
-        else{
-        broadcast_msg(s, buffer, c);}
+        if (VerifMessage(buffer))
+        {
+            //envoie_private(s, buffer, c);
+            Create_message(buffer);
+        }
+        else
+        broadcast_msg(s, buffer, c);
         FD_CLR(c->socket, &s->readfs);
     }
-
     return 1;
 }
 
-void message_priver(t_server *this, char **msg_decomposer, t_client *sender)
+
+void    envoie_private(t_server *this, char *msg, t_client *sender)
 {
-    t_list_item *tmp;
-    //t_client    *client;
-    char        *full_msg;
-    //char        *msg;
-    my_printf("MESSAGE PRIVER \n");
-    tmp = this->clients->head;
-    if (tmp == NULL)
-        return;
-    if (sender != NULL) {
-        full_msg = malloc(sizeof(char) * (strlen(sender->name) +  strlen(msg_decomposer[2])));
-        sprintf(full_msg, "%s : %s", sender->name, msg_decomposer[2]);
-    }
-    else
-        full_msg = msg_decomposer[3];
-   /* while (tmp != NULL) {
-        client = (t_client *) tmp->data;
-        if (client != sender) {
-            send(client->socket, full_msg, strlen(full_msg), 0);
-        }
-        tmp = tmp->next;
-    }*/
-     tmp = tmp->next;
+    t_message *message;
+    message = malloc(sizeof(message));
+    msg = decode_msg(msg);
+    message->msg = malloc(sizeof(msg));
+    message->msg = msg;
+    my_printf("ICI : %s\n", message->msg);
+    broadcast_msg(this, msg, sender);
 }
+
 
 void broadcast_msg(t_server *this, char *msg, t_client *sender) {
     t_list_item *tmp;
