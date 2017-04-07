@@ -51,5 +51,6 @@ char    *decode_msg(char *buffer);
 int VerifMessage(char *buffer);
 t_message *Create_message(char *buffer, t_client *client);
 void message_priver(t_server *this, t_message *message);
+char **fill_commande();
 
 #endif // __MY_SLACK_SERVER_H__

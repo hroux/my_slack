@@ -13,10 +13,10 @@ int VerifMessage(char *buffer)
 
 	valide = 0;
 	i = 0;
-	Commande = malloc(sizeof(char *) * 2);
-	Commande[0] = strdup("private");
-	Commande[1] = strdup("channel");
+	Commande = (char **) fill_commande();
 	MessageDecomposer = my_str_to_wordtab(buffer);
+	if (MessageDecomposer[0] == NULL)
+		return 0;
 	while (Commande[i] != NULL)
 	{
 		if (strcmp(Commande[i], MessageDecomposer[0]) == 0)
@@ -30,6 +30,16 @@ int VerifMessage(char *buffer)
 		return 1;
 	else
 		return 0;
+}
+
+char **fill_commande()
+{
+	char **Commande;
+	
+	Commande = malloc(sizeof(char *) * 2);
+	Commande[0] = strdup("private");
+	Commande[1] = strdup("salon");
+	return Commande;	
 }
 
 t_message *Create_message(char *buffer, t_client *client)
