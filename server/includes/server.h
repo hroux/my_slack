@@ -59,5 +59,7 @@ void message_priver(t_server *this, t_message *message);
 char **fill_commande();
 t_sallon *init_sallon(char *name);
 t_sallon *add_client(t_sallon *sallon, t_client *client, t_server *server);
+t_sallon *del_client(t_sallon *sallon, t_client *client, t_server *server);
+void msg_sallon(char *msg, t_client *sender, t_sallon *sallon);
 
 #endif // __MY_SLACK_SERVER_H__
