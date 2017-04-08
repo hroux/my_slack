@@ -39,6 +39,11 @@ typedef struct s_message {
 	char		*commande;
 } t_message;
 
+typedef struct s_sallon {
+	char	*name;
+	t_list	*clients;
+} t_sallon;
+
 t_server    *create_server();
 void    server_init(t_server *);
 int start_server(t_server *);
@@ -52,5 +57,7 @@ int VerifMessage(char *buffer);
 t_message *Create_message(char *buffer, t_client *client);
 void message_priver(t_server *this, t_message *message);
 char **fill_commande();
+t_sallon *init_sallon(char *name);
+t_sallon *add_client(t_sallon *sallon, t_client *client, t_server *server);
 
 #endif // __MY_SLACK_SERVER_H__
