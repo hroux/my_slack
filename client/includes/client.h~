@@ -1,0 +1,24 @@
+#ifndef __MY_SLACK_CLIENT_H__
+#define __MY_SLACK_CLIENT_H__
+
+#include "../../libs/libmy/libmy_extended.h"
+#include <stdlib.h>
+
+typedef struct	s_client
+{
+  char		*ip;
+  char		*port;
+  void		(*free)(struct s_client*);
+}		t_client;
+
+t_client	*create_client();
+void		free_client(t_client *client);
+
+//TODO à mettre dans la libmy
+char		*my_strdup(char * str);
+int		my_strlen(char *str);
+char		*my_strcpy(char *dest, char *src);
+int		my_strncmp(char *s1, char *s2, int n);
+char		*my_strstr(char *str, char *to_find);
+
+#endif // __MY_SLACK_CLIENT_H__

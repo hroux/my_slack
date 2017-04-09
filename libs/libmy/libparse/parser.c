@@ -5,7 +5,7 @@
 ** Login   <irican_f@etna-alternance.net>
 ** 
 ** Started on  Fri Feb  3 09:32:01 2017 IRICANIN Filip
-** Last update Thu Feb 23 06:35:56 2017 IRICANIN Filip
+** Last update Sun Apr  9 16:43:24 2017 ROUX Hugues
 */
 #include <stdio.h>
 #include <stdlib.h>
@@ -75,7 +75,7 @@ void		free_arg(void *arg)
 {
   if (arg != NULL)
     {
-      free(*(char **)arg);
+      //free(*(char **)arg);
     }
 }
 

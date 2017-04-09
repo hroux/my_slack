@@ -6,10 +6,10 @@ SNAME   =       $(NAME).a
 DNAME   =       $(NAME).so
 SDEPS	=	libparse/libparse.a
 DDEPS	=	libparse/libparse.so
-LIBS    =   liblist/liblist.a \
-            libparse/libparse.a \
-            libprintf/libprintf.a \
-            liblog/liblog.a
+LIBS    =   	liblist/liblist.a \
+		libparse/libparse.a \
+		libprintf/libprintf.a \
+		liblog/liblog.a
 
 ALL	:	$(NAME)
 

@@ -12,7 +12,16 @@ SERVER_SRC	=	server/main.c \
 				server/message.c \
 				server/sallon.c
 
-CLIENT_SRC	=	client/main.c
+CLIENT_SRC	=	client/main.c \
+			client/client.c \
+			client/my_strlen.c\
+			client/my_strdup.c \
+			client/my_strcpy.c \
+			client/my_strstr.c \
+			client/my_strncmp.c \
+			client/my_getnbr.c \
+			client/readline.c \
+			client/client_fnc.c
 
 SERVER_OBJ	=	$(SERVER_SRC:%.c=%.o)
 CLIENT_OBJ	=	$(CLIENT_SRC:%.c=%.o)
