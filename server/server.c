@@ -30,31 +30,42 @@ t_server    *create_server() {
     if (listen(server->listener, BACKLOG) == -1) {
         return NULL;
     }
+    server = server_fill(server);
     server_init(server);
-
     return (server);
 }
 
 void    server_init(t_server *this) {
-    //this->clients = create_list(sizeof(t_client), NULL);
     this->start = start_server;
+}
+
+t_server *server_fill(t_server *server)
+{
+    t_sallon *sallon;
+    t_message *message;
+
+    server->clients = create_list(sizeof(t_client), NULL);
+    server->sallons = create_list(sizeof(t_sallon), NULL);
+    message = malloc(sizeof(message));
+    message->cible = malloc(sizeof(char *));
+    message->cible = strdup("general");
+    sallon = init_sallon(message);
+    server->sallons->push(server->sallons, sallon);
+    return (server);
 }
 
 int start_server(t_server *this) {
     int         fds;
 
     my_printf("Slack server running...\n");
-    this->clients = create_list(sizeof(t_client), NULL);
     while (1) {
         FD_ZERO(&this->readfs);
         FD_SET(0, &this->readfs);
         FD_SET(this->listener, &this->readfs);
-
         this->clients->for_each(this->clients, bind_client, this);
         my_printf("Number of clients => %d\n", this->clients->size);
         fds = select(4 + this->clients->size, &this->readfs, NULL, NULL, NULL);
         my_printf("File descriptors => %d\n", fds);
-        // if incoming connection to server
         if (FD_ISSET(this->listener, &this->readfs)) {
             create_client(this);
             FD_CLR(this->listener, &this->readfs);
@@ -99,6 +110,7 @@ void create_client(t_server *this) {
     n = recv(new_client->socket, buffer, sizeof(buffer), 0);
     buffer[n-1] = '\0';
     new_client->name = strdup(buffer);
+    new_client->sallon = this->sallons->head->data;
     my_printf("Created new client with id => %d\n", new_client->socket);
     sprintf(connect_msg, "User %s connected\n", new_client->name);
     this->clients->push(this->clients, new_client);
@@ -108,6 +120,7 @@ void create_client(t_server *this) {
 int on_client_message(void *server, void *node) {
     char        buffer[MSG_LENGTH];
     t_message   *message;
+    t_sallon    *sallon;
     char        deco_msg[128];
     int         n;
     t_server    *s;
@@ -128,14 +141,20 @@ int on_client_message(void *server, void *node) {
         }
         buffer[n] = '\0';
         my_printf("Message => %s\n", buffer);
-        if (VerifMessage(buffer))
+        if (type_commande(buffer) == 1)
         {
-            //envoie_private(s, buffer, c);
            message = Create_message(buffer, c);
            message_priver(s, message);
         }
+        else if(type_commande(buffer) == 2)
+        {
+            my_printf("mode salon");
+            message = Create_message(buffer, c);
+            sallon = init_sallon(message);
+            my_printf("Nom du salon : %s\n", sallon->name);
+        }
         else
-        broadcast_msg(s, buffer, c);
+            broadcast_msg(s, buffer, c);
         FD_CLR(c->socket, &s->readfs);
     }
     return 1;

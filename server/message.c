@@ -20,7 +20,7 @@ int VerifMessage(char *buffer)
   while (Commande[i] != NULL)
     {
       if (strcmp(Commande[i], MessageDecomposer[0]) == 0)
-	valide = 1;
+	       valide = 1;
       i = i + 1;
     }
   i = 0;
@@ -37,9 +37,32 @@ char **fill_commande()
 	char **Commande;
 	
 	Commande = malloc(sizeof(char *) * 2);
+  if (Commande == NULL)
+    return NULL;
 	Commande[0] = strdup("private");
-	Commande[1] = strdup("salon");
+	Commande[1] = strdup("sallon");
+  Commande[2] = NULL;
 	return Commande;	
+}
+
+int  type_commande(char *buffer)
+{
+ char **MessageDecomposer;
+ int  i;
+ i = 0;
+  if (VerifMessage(buffer))
+  {
+   MessageDecomposer = my_str_to_wordtab(buffer);
+    while (MessageDecomposer[i] != NULL)
+    {
+      if (strcmp("private", MessageDecomposer[i]) == 0)
+        return 1;
+      if (strcmp("sallon", MessageDecomposer[i]) == 0)
+        return 2;
+      i = i + 1;
+    }
+  }
+    return (0);
 }
 
 t_message *Create_message(char *buffer, t_client *client)
@@ -81,7 +104,6 @@ char    *decode_msg(char *buffer)
   i = i + 1;
   while (message_decomposer[i] != NULL)
     {        
-      //my_printf("Vrai : %s\n", message_decomposer[i]);
       strcat(message, " ");
       strcat(message, message_decomposer[i]);
       strcat(message, " ");

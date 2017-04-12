@@ -4,21 +4,21 @@
 #include <errno.h>
 #include "includes/server.h"
 
-t_sallon *init_sallon(char *name)
+t_sallon *init_sallon(t_message *message)
 {
 	t_sallon	*sallon;
 	sallon = malloc(sizeof(sallon));
 	if (sallon == NULL)
 		return NULL;
-	sallon->name = malloc(sizeof(name));
+	sallon->name = malloc(sizeof(message->cible));
 	if (sallon->name == NULL)
 		return NULL;
-	sallon->name = name;
+	sallon->name = message->cible;
 	sallon->clients = create_list(sizeof(t_client), NULL);
 	return sallon;
 }
 
-t_sallon *add_client(t_sallon *sallon, t_client *client, t_server *server)
+t_sallon *add_client(t_sallon *sallon, t_client *client)
 {
 	char *connect_msg;
 
@@ -28,12 +28,12 @@ t_sallon *add_client(t_sallon *sallon, t_client *client, t_server *server)
 	sallon->clients->push(sallon->clients, client);
 	my_printf("%s vient de rentrer dans le salon => %s\n", client->name, sallon->name);
 	sprintf(connect_msg, "User %s connected to %s\n", client->name, sallon->name);
-	broadcast_msg(server, connect_msg, NULL);
+	msg_sallon(connect_msg, NULL, sallon);
 
 	return sallon;
 }
 
-t_sallon *del_client(t_sallon *sallon, t_client *client, t_server *server)
+t_sallon *del_client(t_sallon *sallon, t_client *client)
 {
 	char *connect_msg;
 
@@ -41,9 +41,9 @@ t_sallon *del_client(t_sallon *sallon, t_client *client, t_server *server)
 	if (connect_msg == NULL)
 		return NULL;
 	sallon->clients->remove(sallon->clients,  (t_list_item *)client);
-	my_printf("%s vient de quitter le salon => %s\n", client->name, sallon->name);
+	my_printf("%s vient de quitter le sallon => %s\n", client->name, sallon->name);
 	sprintf(connect_msg, "User %s disconnected to %s\n", client->name, sallon->name);
-	broadcast_msg(server, connect_msg, NULL);
+	msg_sallon(connect_msg, NULL, sallon);
 
 	return sallon;
 }
