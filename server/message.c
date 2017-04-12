@@ -36,7 +36,7 @@ char **fill_commande()
 {
 	char **Commande;
 	
-	Commande = malloc(sizeof(char *) * 2);
+	Commande = malloc(sizeof(char *) * 3);
   if (Commande == NULL)
     return NULL;
 	Commande[0] = strdup("private");

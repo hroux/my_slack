@@ -46,8 +46,8 @@ t_server *server_fill(t_server *server)
 
     server->clients = create_list(sizeof(t_client), NULL);
     server->salons = create_list(sizeof(t_salon), NULL);
-    message = malloc(sizeof(message));
-    message->cible = malloc(sizeof(char *));
+    message = malloc(sizeof(t_message));
+    //message->cible = malloc(sizeof(char *));
     message->cible = strdup("general");
     salon = init_salon(message);
     server->salons->push(server->salons, salon);
@@ -188,8 +188,9 @@ void broadcast_msg(t_server *this, char *msg, t_client *sender) {
     if (tmp == NULL)
         return;
     if (sender != NULL) {
-        full_msg = malloc(sizeof(char) * (strlen(sender->name) +  strlen(msg)));
-        sprintf(full_msg, "%s : %s", sender->name, msg);
+      //full_msg = malloc(sizeof(char) * (strlen(sender->name) +  strlen(msg) + 2));
+      full_msg = malloc(sizeof(char) * 1024);
+      sprintf(full_msg, "%s : %s", sender->name, msg);
     }
     else
         full_msg = msg;
@@ -222,7 +223,7 @@ void message_priver(t_server *this, t_message *message) {
 	}
       if (client->socket > 0)
 	{
-	  full_msg = malloc(sizeof(char) * (strlen(message->auteur->name) + strlen(message->msg)));
+	  full_msg = malloc(sizeof(char) * (strlen(message->auteur->name) + strlen(message->msg) + 1));
 	  sprintf(full_msg, "%s : %s\n", message->auteur->name, message->msg);
 	  send(client->socket, full_msg, strlen(full_msg), 0);
 	}

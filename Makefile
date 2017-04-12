@@ -10,7 +10,9 @@ SERVER_SRC	=	server/main.c \
 				server/my_strlen.c \
 				server/server.c \
 				server/message.c \
-				server/salon.c
+				server/salon.c \
+			server/my_strncpy.c\
+			server/my_strchr.c
 
 CLIENT_SRC	=	client/main.c \
 			client/client.c \

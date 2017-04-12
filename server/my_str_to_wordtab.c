@@ -1,116 +1,100 @@
 /*
-** my_str_to_wordtab.c for c in /home/camille/Jour07C/ex3
+** my_str_to_wordtab.c for  in /home/hugues/DEVC/Jour07/roux_a/my_str_to_wordtab
 ** 
-** Made by VRIGNAUD camille
-** Login   <vrigna_c@etna-alternance.net>
+** Made by ROUX Hugues
+** Login   <roux_a@etna-alternance.net>
 ** 
-** Started on  Mon Oct 24 14:48:30 2016 VRIGNAUD camille
-** Last update Tue Oct 25 17:19:04 2016 VRIGNAUD camille
+** Started on  Mon Oct 24 12:41:07 2016 ROUX Hugues
+** Last update Wed Oct 26 11:03:17 2016 ROUX Hugues
 */
 
-#include <stdio.h>
 #include <stdlib.h>
 
-int	my_strlen(char *str);
+char	*my_strchr(char *str);
+char	*my_strncpy(char *dest, char *src, int n);
 
-int	is_alpha_numeric(char c)
+char	*inc_str(char *str)
 {
-  if (c >= 48 && c <= 57)
-    return (1);
-  else if (c >= 65 && c <= 90)
-    return (1);
-  else if (c >= 97 && c <= 122)
-    return (1);
-  else
-    return (0);
+  while ((!((*str > 47 && *str < 58) ||
+	    (*str > 64 && *str < 91) ||
+	    (*str > 96 && *str < 123))) && *str != '\0')
+    {
+      str = str + 1;
+    }
+  return (str);
 }
 
-void	count_char(char *str, char **tab)
+int	str_len_spec(char *str)
 {
-  int	j;
-  int	i;
-  int carc;
+  int	result;
 
-  carc = 0;
-  i = 0;
-  j = 0;
-  while (str[i] != '\0')
+  result = 0;
+  while (((*str > 47 && *str < 58) ||
+	  (*str > 64 && *str < 91) ||
+	  (*str > 96 && *str < 123)) && *str != '\0')
     {
-      while (is_alpha_numeric(str[i]) == 1)
-	{
-	  carc = carc + 1;
-	  i = i + 1;
-	}
-      if (carc != 0)
-	{
-	  carc = carc + 1;
-	  tab[j] = malloc((carc) * sizeof(char));
-	  j = j + 1;
-	  carc = 0;
-	}
-      i = i + 1;
+      result = result + 1;
+      str = str + 1;
     }
+  return (result);
 }
 
-
-int	count_word(char *str)
+int	nb_words(char *str)
 {
-  int	word;
-  int	i;
+  int	result;
+  char	*st;
 
-  i = 0;
-  word = 0;
-  while (i < my_strlen(str))
+  result = 0;
+  st = str;
+  while (st != NULL && *st != '\0')
     {
-      if (is_alpha_numeric(str[i]) == 1 && is_alpha_numeric(str[i + 1]) == 0)
-	word = word + 1;
-      i = i + 1;
+      st = inc_str(st);
+      result = result + 1;
+      st = my_strchr(st);
+      st = inc_str(st);
     }
-  return (word);
+  return (result);
 }
 
-void	my_fill_tab(char *str, char **tab)
+char	*add(char *temp_str, char **result)
 {
-  int	i;
-  int	j;
-  int	temp;
-
-  i = 0;
-  j = 0;
-  temp = 0;
-  while (str[i] != '\0')
-    {
-      while (is_alpha_numeric(str[i]) == 1)
-	{
-	  tab[j][temp] = str[i];
-	  temp = temp + 1;
-	  i = i + 1;
-	}
-      if (temp != 0)
-	{
-	  tab[j][temp + 1] = '\0';
-	   temp = 0;
-	   j = j + 1;
-	}
-      i = i + 1;
-    }
+  int	length;
+  char	*string;
+  
+  temp_str = inc_str(temp_str);
+  length = str_len_spec(temp_str);
+  string = malloc((length + 1) * sizeof(char));
+  if (string == NULL)
+    return (NULL);
+  string = my_strncpy(string, temp_str, length);
+  string[length] = '\0';
+  *result = string;
+  temp_str = my_strchr(temp_str);
+  temp_str = inc_str(temp_str);
+  return (temp_str);
 }
 
 char	**my_str_to_wordtab(char *str)
 {
-  if (str != NULL)
-    {
-      int	nbWorld;
-      char	**tab;
+  int	count_words;
+  int	i;
+  char	**result;
+  char	**result_bis;
+  char	*temp_str;
 
-      nbWorld = 0;
-      nbWorld = count_word(str);
-      tab = malloc((nbWorld + 1) * sizeof(char*));
-      count_char(str, tab);
-      my_fill_tab(str, tab);
-      tab[nbWorld] = NULL;
-      return (tab);
+  i = 0;
+  count_words = nb_words(str);
+  result = malloc((count_words + 1) * 8);
+  if (result == NULL)
+    return (NULL);
+  result_bis = result;
+  temp_str = str;
+  while (i != count_words)
+    {
+      temp_str = add(temp_str, result);
+      result = result + 1;
+      i = i + 1;
     }
-  else
-    return (0);
+  *result = NULL;
+  return (result_bis);
 }

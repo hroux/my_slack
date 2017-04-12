@@ -5,7 +5,7 @@
 ** Login   <roux_a@etna-alternance.net>
 ** 
 ** Started on  Sun Apr  9 22:36:18 2017 ROUX Hugues
-** Last update Sun Apr  9 23:08:23 2017 ROUX Hugues
+** Last update Wed Apr 12 23:35:13 2017 ROUX Hugues
 */
 #include "includes/client.h"
 
@@ -25,7 +25,7 @@ int	get_and_send_msg(t_client *this)
       free(msg);
       return 0;
     }
-  if(send(this->sock, msg, my_strlen(msg), 0) < 0)
+  if(send(this->sock, msg, my_strlen(msg) + 1, 0) < 0)
     {
       free(msg);
       return 6;
