@@ -40,7 +40,7 @@ char **fill_commande()
   if (Commande == NULL)
     return NULL;
 	Commande[0] = strdup("private");
-	Commande[1] = strdup("sallon");
+	Commande[1] = strdup("salon");
   Commande[2] = NULL;
 	return Commande;	
 }
@@ -57,7 +57,7 @@ int  type_commande(char *buffer)
     {
       if (strcmp("private", MessageDecomposer[i]) == 0)
         return 1;
-      if (strcmp("sallon", MessageDecomposer[i]) == 0)
+      if (strcmp("salon", MessageDecomposer[i]) == 0)
         return 2;
       i = i + 1;
     }

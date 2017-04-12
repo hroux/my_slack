@@ -51,6 +51,7 @@ int main()
   str_list->push(str_list, &item2);
   str_list->push(str_list, &item3);
   str_list->push(str_list, &item4);
+  str_list->remove(str_list , str_list->get(str_list, 0));
   str_list->for_each(str_list, for_each_str, &arg);
   str_list->free(str_list);
   str_list = NULL;

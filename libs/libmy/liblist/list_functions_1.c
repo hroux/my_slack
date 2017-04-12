@@ -9,6 +9,7 @@
 */
 #include <stdlib.h>
 #include "headers/list.h"
+#include <stdio.h>
 
 t_list_item		*get_node_at_index(t_list *this, int index)
 {
@@ -46,23 +47,30 @@ void		remove_node_at_index(t_list *this, int index)
 void		remove_node(t_list *this, t_list_item *item)
 {
   // Milieu
+  printf("%d\n", this->size);
+  printf("%d\n", item->index);
   if (item->prev && item->next) {
+    printf("if 1");
     item->prev->next = item->next;
     item->next->prev = item->prev;
   } // Debut
   else if (!item->prev && item->next) {
+    printf("if 2");
     this->head = item->next;
     this->head->prev = NULL;
   } // Fin
   else if (!item->next && item->prev) {
+    printf("if 3");
     this->tail = item->prev;
     this->tail->next = NULL;
   }
   else {
+    printf("if 4");
     this->head = NULL;
     this->tail = NULL;
   }
   this->size--;
+  printf("if 5");
   if (this->free_data)
     this->free_data(item->data);
   free(item->data);

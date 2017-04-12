@@ -21,21 +21,21 @@ typedef struct s_server {
     struct protoent 	*protocol;
     socklen_t 			socklen;
 	t_list				*clients;
-	t_list				*sallons;
+	t_list				*salons;
 	fd_set				readfs;
 
     int (*start)();
 
 } t_server;
 
-typedef struct s_sallon {
+typedef struct s_salon {
 	char	*name;
 	t_list	*clients;
-} t_sallon;
+} t_salon;
 
 typedef struct s_client {
 	char	*name;
-	t_sallon *sallon;
+	t_salon *salon;
 	int 	socket;
 } t_client;
 
@@ -60,10 +60,10 @@ int VerifMessage(char *buffer);
 t_message *Create_message(char *buffer, t_client *client);
 void message_priver(t_server *this, t_message *message);
 char **fill_commande();
-t_sallon *init_sallon(t_message *message);
-t_sallon *add_client(t_sallon *sallon, t_client *client);
-t_sallon *del_client(t_sallon *sallon, t_client *client);
-void msg_sallon(char *msg, t_client *sender, t_sallon *sallon);
+t_salon *init_salon(t_message *message);
+t_salon *add_client(t_salon *salon, t_client *client);
+t_salon *del_client(t_salon *salon, t_client *client);
+void msg_salon(char *msg, t_client *sender, t_salon *salon);
 int  type_commande(char *buffer);
 t_server *server_fill(t_server *server);
 

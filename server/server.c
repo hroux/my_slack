@@ -41,16 +41,16 @@ void    server_init(t_server *this) {
 
 t_server *server_fill(t_server *server)
 {
-    t_sallon *sallon;
+    t_salon *salon;
     t_message *message;
 
     server->clients = create_list(sizeof(t_client), NULL);
-    server->sallons = create_list(sizeof(t_sallon), NULL);
+    server->salons = create_list(sizeof(t_salon), NULL);
     message = malloc(sizeof(message));
     message->cible = malloc(sizeof(char *));
     message->cible = strdup("general");
-    sallon = init_sallon(message);
-    server->sallons->push(server->sallons, sallon);
+    salon = init_salon(message);
+    server->salons->push(server->salons, salon);
     return (server);
 }
 
@@ -110,7 +110,8 @@ void create_client(t_server *this) {
     n = recv(new_client->socket, buffer, sizeof(buffer), 0);
     buffer[n-1] = '\0';
     new_client->name = strdup(buffer);
-    new_client->sallon = this->sallons->head->data;
+    new_client->salon = this->salons->head->data;
+    add_client(this->salons->head->data, new_client);
     my_printf("Created new client with id => %d\n", new_client->socket);
     sprintf(connect_msg, "User %s connected\n", new_client->name);
     this->clients->push(this->clients, new_client);
@@ -118,14 +119,16 @@ void create_client(t_server *this) {
 }
 
 int on_client_message(void *server, void *node) {
+    t_list_item *tmp1;
+    t_salon *test;
     char        buffer[MSG_LENGTH];
     t_message   *message;
-    t_sallon    *sallon;
+    t_salon    *salon;
     char        deco_msg[128];
     int         n;
     t_server    *s;
     t_client    *c;
-
+    t_list_item    *client;
     s = (t_server *) server;
     c = (t_client *) ((t_list_item *) node)->data;
     if (FD_ISSET(c->socket, &s->readfs)) {
@@ -134,8 +137,14 @@ int on_client_message(void *server, void *node) {
         if (n == 0 || n == -1) {
             my_printf("User %s disconnected\n", c->name);
             sprintf(deco_msg, "User %s disconnected\n", c->name);
+            tmp1 = s->salons->head->data;
+                test = (t_salon *) tmp1;
+               client =  test->clients->head;
+                my_printf("avant  %d \n", test->clients->size);
+                //del_client(s->salons->head->data, c);
+                test->clients->remove(test->clients, client);
+                my_printf("apré \n");
             close(c->socket);
-            s->clients->remove(s->clients, (t_list_item *)node);
             broadcast_msg(s, deco_msg, NULL);
             return 1;
         }
@@ -150,8 +159,11 @@ int on_client_message(void *server, void *node) {
         {
             my_printf("mode salon");
             message = Create_message(buffer, c);
-            sallon = init_sallon(message);
-            my_printf("Nom du salon : %s\n", sallon->name);
+            salon = init_salon(message);
+            //salon = add_client(salon, c);
+            //s->salons->head->data =  del_client(s->salons->head->data, c);
+            //s->salons->push(s->salons, salon);
+            my_printf("Name of salon : %s\n", salon->name);
         }
         else
             broadcast_msg(s, buffer, c);
@@ -163,10 +175,16 @@ int on_client_message(void *server, void *node) {
 
 void broadcast_msg(t_server *this, char *msg, t_client *sender) {
     t_list_item *tmp;
+    t_list_item *tmp1;
     t_client    *client;
     char        *full_msg;
+    t_salon    *test;
 
-    tmp = this->clients->head;
+    tmp1 = this->salons->head;
+    test = (t_salon *) tmp1->data;
+    while (tmp1 != NULL)
+    {
+    tmp = test->clients->head;
     if (tmp == NULL)
         return;
     if (sender != NULL) {
@@ -182,6 +200,8 @@ void broadcast_msg(t_server *this, char *msg, t_client *sender) {
         }
         tmp = tmp->next;
     }
+    tmp1 = tmp1->next;
+}
 }
 
 void message_priver(t_server *this, t_message *message) {
