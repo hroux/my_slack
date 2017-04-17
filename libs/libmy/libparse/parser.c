@@ -5,22 +5,20 @@
 ** Login   <irican_f@etna-alternance.net>
 ** 
 ** Started on  Fri Feb  3 09:32:01 2017 IRICANIN Filip
-** Last update Sun Apr  9 16:43:24 2017 ROUX Hugues
+** Last update Mon Apr 17 16:39:04 2017 ROUX Hugues
 */
 #include <stdio.h>
 #include <stdlib.h>
 #include "headers/parser.h"
 #include "../liblist/headers/list.h"
 
-t_parser		*create_parser(int argc, char **argv)
+t_parser	*create_parser(int argc, char **argv)
 {
-  t_parser *parser;
+  t_parser	*parser;
 
   parser = malloc(sizeof(t_parser));
   if (parser == NULL)
-    {
-      return NULL;
-    }
+    return NULL;
   parser->argc = argc;
   parser->argv = argv;
   parser->args = create_list(sizeof(char *), free_arg);
@@ -32,10 +30,10 @@ t_parser		*create_parser(int argc, char **argv)
   return parser;
 }
 
-void		parse_args(t_parser *this)
+void	parse_args(t_parser *this)
 {
-  int i;
-  char *arg;
+  int	i;
+  char	*arg;
 
   for (i = 1; i < this->argc; i++) {
     arg = this->argv[i];

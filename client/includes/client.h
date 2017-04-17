@@ -1,3 +1,13 @@
+/*
+** client.h for  in /home/hugues/Documents/C/my_slack/client
+** 
+** Made by ROUX Hugues
+** Login   <roux_a@etna-alternance.net>
+** 
+** Started on  Mon Apr 17 17:24:29 2017 ROUX Hugues
+** Last update Mon Apr 17 17:31:09 2017 ROUX Hugues
+*/
+
 #ifndef __MY_SLACK_CLIENT_H__
 #define __MY_SLACK_CLIENT_H__
 
@@ -33,6 +43,7 @@ int		go_client(t_client *this);
 // Fonction envoi et reception
 int		recv_and_print_msg(t_client *this);
 int		get_and_send_msg(t_client *this);
+int		my_send(int sock, char *msg);
 
 //Fonctions d'erreurs
 void		print_error(int code);

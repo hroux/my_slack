@@ -66,5 +66,6 @@ t_salon *del_client(t_salon *salon, t_client *client);
 void msg_salon(char *msg, t_client *sender, t_salon *salon);
 int  type_commande(char *buffer);
 t_server *server_fill(t_server *server);
+void	get_callback_msg(int sock);
 
 #endif // __MY_SLACK_SERVER_H__

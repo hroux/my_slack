@@ -5,7 +5,7 @@
 ** Login   <irican_f@etna-alternance.net>
 ** 
 ** Started on  Fri Feb  3 09:15:58 2017 IRICANIN Filip
-** Last update Fri Feb 17 11:21:59 2017 IRICANIN Filip
+** Last update Mon Apr 17 16:34:47 2017 ROUX Hugues
 */
 #include <stdlib.h>
 #include "headers/list.h"
@@ -19,16 +19,14 @@ void		list_free(t_list *this)
 
 void		list_for_each(t_list *this, t_iterator iterator, void *arg)
 {
-  t_list_item *tmp;
-  t_list_item *next;
-  int result;
+  t_list_item	*tmp;
+  t_list_item	*next;
+  int		result;
 
   tmp = this->head;
   result = 1;
   if (iterator == NULL)
-    {
-      return;
-    }
+    return;
   while (tmp != NULL && result)
     {
       next = tmp->next;
@@ -38,15 +36,13 @@ void		list_for_each(t_list *this, t_iterator iterator, void *arg)
 	result = iterator(NULL, tmp);
       tmp = next;
     }
-
 }
 
 void		list_copy(t_list *this, t_list *dest) {
 
   t_list_item *tmp;
-  
-  tmp = this->head;
 
+  tmp = this->head;
   while (tmp != NULL) {
     dest->push(dest, tmp->data);
     tmp = tmp->next;

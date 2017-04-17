@@ -5,7 +5,7 @@
 ** Login   <irican_f@etna-alternance.net>
 ** 
 ** Started on  Thu Feb 23 06:38:51 2017 IRICANIN Filip
-** Last update Thu Feb 23 06:39:03 2017 IRICANIN Filip
+** Last update Mon Apr 17 16:23:49 2017 ROUX Hugues
 */
 #include <stdlib.h>
 #include "../libmy_extended.h"
@@ -16,22 +16,13 @@ t_logger	*create_logger(t_log_cfg *config)
   t_logger	*logger;
 
   logger = malloc(sizeof(t_logger));
-
   if (logger == NULL)
-    {
-      return (NULL);
-    }
-
+    return (NULL);
   if (config == NULL)
-    {
-      config = get_default_cfg();
-    }
-
+    config = get_default_cfg();
   init_logger(logger, config);
-
   return (logger);
 }
-
 
 void		init_logger(t_logger *logger, t_log_cfg *config)
 {

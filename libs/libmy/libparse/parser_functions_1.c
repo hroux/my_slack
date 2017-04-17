@@ -5,58 +5,47 @@
 ** Login   <irican_f@etna-alternance.net>
 ** 
 ** Started on  Fri Feb  3 09:35:34 2017 IRICANIN Filip
-** Last update Thu Feb 23 06:37:04 2017 IRICANIN Filip
+** Last update Mon Apr 17 16:41:48 2017 ROUX Hugues
 */
 #include <stdlib.h>
 #include "headers/parser.h"
 
-t_option		*get_option_by_field(t_list *options, t_option_field field)
+t_option	*get_option_by_field(t_list *options,
+				     t_option_field field)
 {
-
-  t_option *option;
+  t_option	*option;
 
   option = find_option_by_name(options, field.name);
   if (option == NULL && field.shortcut != NULL)
-    {
-      option = find_option_by_name(options, field.shortcut);
-    }
+    option = find_option_by_name(options, field.shortcut);
   return (option);
 }
 
 void		exec_field_callback(t_option_callback callback, void *param)
 {
-
   if (callback == NULL)
-    {
-      return;
-    }
+    return;
   if (param != NULL)
-    {
-      callback(param);
-    }
+    callback(param);
   else
-    {
-      callback(NULL);
-    }
-
+    callback(NULL);
 }
 
 t_list		*default_value_to_list(char *default_value)
 {
-
-  t_list *list;
+  t_list	*list;
+  
   list = create_list(sizeof(char *), NULL);
   list->push(list, &default_value);
   return (list);
-
 }
 
-int		validate(t_parser *this, t_option_field fields[])
+int			validate(t_parser *this, t_option_field fields[])
 {
-  int i;
-  t_option *option;
-  t_option_field field;
-  t_list *default_values;
+  int			i;
+  t_option		*option;
+  t_option_field	field;
+  t_list		*default_values;
 
   for (i = 0; fields[i].name != NULL; i++)
     {
@@ -65,9 +54,7 @@ int		validate(t_parser *this, t_option_field fields[])
       if (option == NULL)
 	{
 	  if (field.required)
-	    {
-	      return (0);
-	    }
+	    return (0);
 	  else
 	    {
 	      default_values =  default_value_to_list(field.default_value);
@@ -75,20 +62,14 @@ int		validate(t_parser *this, t_option_field fields[])
 	      default_values->free(default_values);
 	    }
 	}
-
       if (option != NULL)
 	{
 	  if (option->values->size == 0 && field.has_value)
-	    {
-	      return (0);
-	    }            
+	    return (0);          
 	  else
-	    {
-	      exec_field_callback(field.callback, option->values);
-	    }
+	    exec_field_callback(field.callback, option->values);
 	}
     }
-
   return 1;
 }
 

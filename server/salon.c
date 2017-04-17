@@ -71,6 +71,7 @@ void msg_salon(char *msg, t_client *sender, t_salon *salon) {
         client = (t_client *) tmp->data;
         if (client != sender) {
             send(client->socket, full_msg, strlen(full_msg), 0);
+	    get_callback_msg(client->socket);
         }
         tmp = tmp->next;
     }

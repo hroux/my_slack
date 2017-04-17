@@ -5,9 +5,8 @@
 ** Login   <irican_f@etna-alternance.net>
 ** 
 ** Started on  Fri Feb  3 09:06:48 2017 IRICANIN Filip
-** Last update Fri Feb 17 11:25:54 2017 IRICANIN Filip
+** Last update Mon Apr 17 16:33:27 2017 ROUX Hugues
 */
-
 #include <stdlib.h>
 #include "headers/list.h"
 #include <string.h>
@@ -15,18 +14,13 @@
 t_list		*create_list(size_t item_size, t_free_fn free_data)
 {
   t_list	*list;
-  
+
   list = (t_list *) malloc(sizeof(t_list));
-
   if (list == NULL)
-    {
-      return NULL;
-    }
-
+    return NULL;
   list->data_size = item_size;
   list->free_data = free_data;
   list_init(list);
-
   return list;
 }
 
@@ -49,26 +43,23 @@ void		list_init(t_list *this)
 
 void		list_push(t_list *this, void *item)
 {
-  t_list_item *node;
+  t_list_item	*node;
 
   node = (t_list_item *) malloc(sizeof(t_list_item));
   if (node == NULL)
-    {
-      return;
-    }
+    return;
   node->data = malloc(this->data_size);
   node->prev = NULL;
   node->next = NULL;
   node->index = this->size;
   if (node->data == NULL)
-    {
-      return;
-    }
+    return;
   memcpy(node->data, item, this->data_size);
-  if(this->size == 0) {
-    this->head = node;
-    this->tail = node;
-  }
+  if(this->size == 0)
+    {
+      this->head = node;
+      this->tail = node;
+    }
   else
     {
       this->tail->next = node;
@@ -85,16 +76,13 @@ void		list_pop(t_list *this)
 
 void		list_clear(t_list *this)
 {
-  t_list_item *current;
+  t_list_item	*current;
 
   while (this->head != NULL) {
     current = this->head;
     this->head = current->next;
-
-    if (this->free_data) {
+    if (this->free_data)
       this->free_data(current->data);
-    }
-
     free(current->data);
     free(current);
     this->size--;

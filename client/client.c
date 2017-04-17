@@ -5,7 +5,7 @@
 ** Login   <roux_a@etna-alternance.net>
 ** 
 ** Started on  Sun Apr  9 17:23:57 2017 ROUX Hugues
-** Last update Sun Apr  9 23:12:17 2017 ROUX Hugues
+** Last update Mon Apr 17 17:07:43 2017 ROUX Hugues
 */
 #include "includes/client.h"
 
@@ -74,6 +74,10 @@ int			init_client(t_client *this)
   return 0;
 }
 
+/**
+ * Fonction permettant d'initialiser et de lancer le client
+ * Si erreur alors il le log
+ */
 void		start_client(t_client *this)
 {
   int		err;
@@ -88,7 +92,7 @@ void		start_client(t_client *this)
   this->error(err);
 }
 
-/*
+/**
  *Fonction réalisant une boncle inf 
  *pour envoyer et recevoir les messages
  */

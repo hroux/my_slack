@@ -89,33 +89,38 @@ int bind_client(void *server, void *node) {
     return 1;
 }
 
-void create_client(t_server *this) {
-    t_client    *new_client;
-    char        connect_msg[64];
-    char        buffer[32];
-    int         n;
+/**
+ * hroux : Rajout d'une réception après le send pour recevoir le "OK message receiv"
+ */
+void		create_client(t_server *this) {
+  t_client	*new_client;
+  char		connect_msg[64];
+  char		buffer[32];
+  int		n;	
 
-    new_client = malloc(sizeof(t_client));
-    if (new_client == NULL) {
-        return;
-    }
-    new_client->name = NULL;
-    new_client->socket = accept(this->listener, (struct sockaddr *)&this->cli, &this->socklen);
-    if (new_client->socket < 0) {
-        free(new_client);
-        return;
-    }
-    send(new_client->socket, "Welcome to my slack !\n", strlen("Welcome to my slack !\n"), 0);
-    send(new_client->socket, "Enter your name : ", strlen("Enter your name : "), 0);
-    n = recv(new_client->socket, buffer, sizeof(buffer), 0);
-    buffer[n-1] = '\0';
-    new_client->name = strdup(buffer);
-    new_client->salon = this->salons->head->data;
-    add_client(this->salons->head->data, new_client);
-    my_printf("Created new client with id => %d\n", new_client->socket);
-    sprintf(connect_msg, "User %s connected\n", new_client->name);
-    this->clients->push(this->clients, new_client);
-    broadcast_msg(this, connect_msg, NULL);
+  new_client = malloc(sizeof(t_client));
+  if (new_client == NULL) {
+    return;
+  }
+  new_client->name = NULL;
+  new_client->socket = accept(this->listener, (struct sockaddr *)&this->cli, &this->socklen);
+  if (new_client->socket < 0) {
+    free(new_client);
+    return;
+  }
+  send(new_client->socket, "Welcome to my slack !\n", strlen("Welcome to my slack !\n"), 0);
+  get_callback_msg(new_client->socket);
+  send(new_client->socket, "Enter your name : ", strlen("Enter your name : "), 0);
+  get_callback_msg(new_client->socket);
+  n = recv(new_client->socket, buffer, sizeof(buffer), 0);
+  buffer[n-1] = '\0';
+  new_client->name = strdup(buffer);
+  new_client->salon = this->salons->head->data;
+  add_client(this->salons->head->data, new_client);
+  my_printf("Created new client with id => %d\n", new_client->socket);
+  sprintf(connect_msg, "User %s connected\n", new_client->name);
+  this->clients->push(this->clients, new_client);
+  broadcast_msg(this, connect_msg, NULL);
 }
 
 int on_client_message(void *server, void *node) {
@@ -140,10 +145,8 @@ int on_client_message(void *server, void *node) {
             tmp1 = s->salons->head->data;
                 test = (t_salon *) tmp1;
                client =  test->clients->head;
-                my_printf("avant  %d \n", test->clients->size);
                 //del_client(s->salons->head->data, c);
                 test->clients->remove(test->clients, client);
-                my_printf("apré \n");
             close(c->socket);
             broadcast_msg(s, deco_msg, NULL);
             return 1;
@@ -172,39 +175,45 @@ int on_client_message(void *server, void *node) {
     return 1;
 }
 
+/**
+ * hroux : Rajout d'une réception après un send pour recevoir le "OK message receiv"
+ */
+void		broadcast_msg(t_server *this, char *msg, t_client *sender) {
+  t_list_item	*tmp;
+  t_list_item	*tmp1;
+  t_client	*client;
+  char		*full_msg;
+  t_salon	*test;
 
-void broadcast_msg(t_server *this, char *msg, t_client *sender) {
-    t_list_item *tmp;
-    t_list_item *tmp1;
-    t_client    *client;
-    char        *full_msg;
-    t_salon    *test;
-
-    tmp1 = this->salons->head;
-    test = (t_salon *) tmp1->data;
-    while (tmp1 != NULL)
+  tmp1 = this->salons->head;
+  test = (t_salon *) tmp1->data;
+  while (tmp1 != NULL)
     {
-    tmp = test->clients->head;
-    if (tmp == NULL)
+      tmp = test->clients->head;
+      if (tmp == NULL)
         return;
-    if (sender != NULL) {
-      //full_msg = malloc(sizeof(char) * (strlen(sender->name) +  strlen(msg) + 2));
-      full_msg = malloc(sizeof(char) * 1024);
-      sprintf(full_msg, "%s : %s", sender->name, msg);
-    }
-    else
+      if (sender != NULL) {
+	//full_msg = malloc(sizeof(char) * (strlen(sender->name) +  strlen(msg) + 2));
+	full_msg = malloc(sizeof(char) * 1024);
+	sprintf(full_msg, "%s : %s", sender->name, msg);
+      }
+      else
         full_msg = msg;
-    while (tmp != NULL) {
+      while (tmp != NULL) {
         client = (t_client *) tmp->data;
         if (client != sender) {
-            send(client->socket, full_msg, strlen(full_msg), 0);
+	  send(client->socket, full_msg, strlen(full_msg), 0);
+	  get_callback_msg(client->socket);
         }
         tmp = tmp->next;
+      }
+      tmp1 = tmp1->next;
     }
-    tmp1 = tmp1->next;
-}
 }
 
+/**
+ * hroux : Rajout d'une réception après le send pour recevoir le "OK message receiv"
+ */
 void message_priver(t_server *this, t_message *message) {
   char *full_msg;
   t_list_item *tmp;
@@ -226,8 +235,32 @@ void message_priver(t_server *this, t_message *message) {
 	  full_msg = malloc(sizeof(char) * (strlen(message->auteur->name) + strlen(message->msg) + 1));
 	  sprintf(full_msg, "%s : %s\n", message->auteur->name, message->msg);
 	  send(client->socket, full_msg, strlen(full_msg), 0);
+	  get_callback_msg(client->socket);
 	}
       else
-        send(message->auteur->socket, "Désoler mais cette utilisateur n'est pas connecter\n", 52, 0);
+	{
+	  send(message->auteur->socket, "Désolé mais cet utilisateur n'est pas connecté\n", 48, 0);
+	  get_callback_msg(message->auteur->socket);
+	}
     }
 }
+
+/**
+ *fonction permettant de recevoir le "OK Message receved du client"
+ *à mettre après chaque send
+ *
+ */
+void	get_callback_msg(int sock)
+{
+  char	*rep_client;
+  int	n;
+  
+  if ((rep_client = malloc(sizeof(char) * 1024)) != NULL)
+    {
+      n = recv(sock, rep_client, 1023, 0);
+      rep_client[n] = '\0';
+      my_printf("%s\n", rep_client);
+      free(rep_client);
+    }
+}
+  
