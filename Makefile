@@ -5,7 +5,7 @@
 ## Login   <roux_a@etna-alternance.net>
 ## 
 ## Started on  Mon Apr 17 17:38:47 2017 ROUX Hugues
-## Last update Mon Apr 17 17:40:09 2017 ROUX Hugues
+## Last update Wed Apr 19 10:34:57 2017 ROUX Hugues
 ##
 
 CC		=	gcc
@@ -34,7 +34,8 @@ CLIENT_SRC	=	client/main.c \
 			client/my_getnbr.c \
 			client/readline.c \
 			client/client_fnc.c \
-			client/msg.c
+			client/msg.c \
+			client/my_strcmp.c
 
 SERVER_OBJ	=	$(SERVER_SRC:%.c=%.o)
 CLIENT_OBJ	=	$(CLIENT_SRC:%.c=%.o)

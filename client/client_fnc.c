@@ -5,7 +5,7 @@
 ** Login   <roux_a@etna-alternance.net>
 ** 
 ** Started on  Sun Apr  9 22:36:18 2017 ROUX Hugues
-** Last update Mon Apr 17 20:14:04 2017 ROUX Hugues
+** Last update Wed Apr 19 11:11:52 2017 ROUX Hugues
 */
 #include "includes/client.h"
 
@@ -17,16 +17,23 @@ int	get_and_send_msg(t_client *this)
 {
   char	*msg;
   int	result;
-  
+
+  result = -1;
   msg = readLine();
   if (msg == NULL)
     return 5;
-  if (my_strstr("/quit", msg) != NULL)
+  if (my_strcmp("quit", msg) == 0)
     {
       free(msg);
       return 0;
     }
-  result = my_send(this->sock, msg);
+  if (my_strcmp("help", msg) == 0)
+    {
+      free(msg);
+      help();
+    }
+  else if (my_strlen(msg) != 0)
+    result = my_send(this->sock, msg);
   return result;
 }
 
@@ -91,4 +98,18 @@ void		print_error(int code)
   else
     Logger->info(Logger,"%s \n", tab_error[code]);
 }
-  
+
+/*
+ *Fonction permettant d'afficher la liste des commandes
+ *
+ */
+void	help()
+{
+  my_printf("/*********Help*********/\n");
+  my_printf("join\t<name_salon>\tRejoindre un serveur\n");
+  my_printf("create\t<name_salon>\tCréer un serveur\n");
+  my_printf("delete\t<name_salon>\tSupprimer un serveur\n");
+  my_printf("private\t<name_user>\tEnvoyer un message privé\n");
+  my_printf("help\t\t\tAfficher l'aide\n");
+  my_printf("quit\t\t\tSe déconnecter\n");
+}
