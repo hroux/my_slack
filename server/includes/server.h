@@ -21,21 +21,27 @@ typedef struct s_server {
     struct protoent 	*protocol;
     socklen_t 			socklen;
 	t_list				*clients;
-	t_list				*salons;
+	t_list				*rooms;
 	fd_set				readfs;
 
-    int (*start)();
+    int     (*start)();
+    void    (*broadcast)(t_server *, char *, t_client *);
 
 } t_server;
 
-typedef struct s_salon {
+typedef struct s_room {
 	char	*name;
 	t_list	*clients;
-} t_salon;
+
+	void (*add_client)(t_room *, t_client *);
+	void (*remove_client)(t_room *, t_client *);
+	void (*send)(char *, t_client *, t_room *);
+
+} t_room;
 
 typedef struct s_client {
 	char	*name;
-	t_salon *salon;
+	t_room 	*room;
 	int 	socket;
 } t_client;
 
@@ -60,11 +66,16 @@ int VerifMessage(char *buffer);
 t_message *Create_message(char *buffer, t_client *client);
 void message_priver(t_server *this, t_message *message);
 char **fill_commande();
-t_salon *init_salon(t_message *message);
-t_salon *add_client(t_salon *salon, t_client *client);
-t_salon *del_client(t_salon *salon, t_client *client);
-void msg_salon(char *msg, t_client *sender, t_salon *salon);
+
+// ROOM
+t_room	*create_room(char *);
+void 	init_room(t_room *);
+void	add_client(t_room *, t_client *);
+void	remove_client(t_room *, t_client *);
+void 	msg_salon(char *, t_client *, t_room *);
+
 int  type_commande(char *buffer);
+
 t_server *server_fill(t_server *server);
 void	get_callback_msg(int sock);
 

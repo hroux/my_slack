@@ -39,6 +39,7 @@ typedef struct s_list {
   int(*length)(struct s_list*);
   void(*for_each)(struct s_list*, t_iterator, void *);
   void(*copy)(struct s_list *, struct s_list *);
+  t_list_item*(*find)(struct s_list *, void *);
   
 } t_list;
 
@@ -49,6 +50,7 @@ void list_pop(t_list *);
 void list_clear(t_list *);
 void list_free(t_list *);
 t_list_item *get_node_at_index(t_list *, int);
+t_list_item *get_node_by_data(t_list *, void *);
 void remove_node_at_index(t_list *, int);
 void remove_node(t_list *, t_list_item *);
 int list_length(t_list *);

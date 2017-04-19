@@ -34,6 +34,7 @@ void		list_init(t_list *this)
   this->clear = list_clear;
   this->free = list_free;
   this->get = get_node_at_index;
+  this->find = get_node_by_data;
   this->remove_at = remove_node_at_index;
   this->remove = remove_node;
   this->length = list_length;

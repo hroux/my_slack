@@ -51,6 +51,9 @@ server	:	$(SERVER_OBJ)
 client	:	$(CLIENT_OBJ)
 		$(CC) $(CLIENT_OBJ) $(LIBS) -o $(CLIENT_NAME) $(CFLAGS)
 
+lib	:
+		make -C libs/libmy
+
 clean	:
 		$(RM) $(SERVER_OBJ)
 		$(RM) $(CLIENT_OBJ)

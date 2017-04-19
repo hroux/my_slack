@@ -30,34 +30,26 @@ t_server    *create_server() {
     if (listen(server->listener, BACKLOG) == -1) {
         return NULL;
     }
-    server = server_fill(server);
     server_init(server);
     return (server);
 }
 
 void    server_init(t_server *this) {
+    t_room *general;
+
+    this->rooms = create_list(sizeof(t_room), NULL);
+    this->clients = create_list(sizeof(t_client), NULL);
     this->start = start_server;
+    this->broadcast = broadcast_msg;
+    general = create_room(strdup("general"));
+    this->rooms->push(this->rooms, general);
 }
 
-t_server *server_fill(t_server *server)
-{
-    t_salon *salon;
-    t_message *message;
-
-    server->clients = create_list(sizeof(t_client), NULL);
-    server->salons = create_list(sizeof(t_salon), NULL);
-    message = malloc(sizeof(t_message));
-    //message->cible = malloc(sizeof(char *));
-    message->cible = strdup("general");
-    salon = init_salon(message);
-    server->salons->push(server->salons, salon);
-    return (server);
-}
 
 int start_server(t_server *this) {
     int         fds;
 
-    my_printf("Slack server running...\n");
+    my_printf("Slack server started successfully !\n");
     while (1) {
         FD_ZERO(&this->readfs);
         FD_SET(0, &this->readfs);
@@ -93,34 +85,37 @@ int bind_client(void *server, void *node) {
  * hroux : Rajout d'une réception après le send pour recevoir le "OK message receiv"
  */
 void		create_client(t_server *this) {
-  t_client	*new_client;
-  char		connect_msg[64];
-  char		buffer[32];
-  int		n;	
 
-  new_client = malloc(sizeof(t_client));
-  if (new_client == NULL) {
+    t_room      *general;
+    t_client	*new_client;
+    char		connect_msg[64];
+    char		buffer[32];
+    int		n;
+
+    general = (t_room *) this->rooms->head->data;
+    new_client = malloc(sizeof(t_client));
+    if (new_client == NULL) {
     return;
-  }
-  new_client->name = NULL;
-  new_client->socket = accept(this->listener, (struct sockaddr *)&this->cli, &this->socklen);
-  if (new_client->socket < 0) {
+    }
+    new_client->name = NULL;
+    new_client->socket = accept(this->listener, (struct sockaddr *)&this->cli, &this->socklen);
+    if (new_client->socket < 0) {
     free(new_client);
     return;
-  }
-  send(new_client->socket, "Welcome to my slack !\n", strlen("Welcome to my slack !\n"), 0);
-  get_callback_msg(new_client->socket);
-  send(new_client->socket, "Enter your name : ", strlen("Enter your name : "), 0);
-  get_callback_msg(new_client->socket);
-  n = recv(new_client->socket, buffer, sizeof(buffer), 0);
-  buffer[n-1] = '\0';
-  new_client->name = strdup(buffer);
-  new_client->salon = this->salons->head->data;
-  add_client(this->salons->head->data, new_client);
-  my_printf("Created new client with id => %d\n", new_client->socket);
-  sprintf(connect_msg, "User %s connected\n", new_client->name);
-  this->clients->push(this->clients, new_client);
-  broadcast_msg(this, connect_msg, NULL);
+    }
+    send(new_client->socket, "Welcome to my slack !\n", strlen("Welcome to my slack !\n"), 0);
+    get_callback_msg(new_client->socket);
+    send(new_client->socket, "Enter your name : ", strlen("Enter your name : "), 0);
+    get_callback_msg(new_client->socket);
+    n = recv(new_client->socket, buffer, sizeof(buffer), 0);
+    buffer[n-1] = '\0';
+    new_client->name = strdup(buffer);
+    new_client->room = general;
+    general->add_client(general, new_client);
+    my_printf("Created new client with id => %d\n", new_client->socket);
+    sprintf(connect_msg, "User %s connected\n", new_client->name);
+    this->clients->push(this->clients, new_client);
+    broadcast_msg(this, connect_msg, NULL);
 }
 
 int on_client_message(void *server, void *node) {
@@ -134,8 +129,10 @@ int on_client_message(void *server, void *node) {
     t_server    *s;
     t_client    *c;
     t_list_item    *client;
+
     s = (t_server *) server;
     c = (t_client *) ((t_list_item *) node)->data;
+
     if (FD_ISSET(c->socket, &s->readfs)) {
         my_printf("Message from %s\n", c->name);
         n = recv(c->socket, buffer, sizeof(buffer), 0);
