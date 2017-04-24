@@ -24,6 +24,12 @@ void    join_room_cmd(t_server *server, char *room_name, t_client *client) {
     t_room *next;
     char err_msg[MSG_LENGTH];
 
+    if (room_name == NULL || strlen(room_name) < 1) {
+        sprintf(err_msg, "Le nom du salon ne doit pas etre vide !\n");
+        send(client->socket, err_msg, my_strlen(err_msg), 0);
+        return;
+    }
+
     next = get_room_by_name(server->rooms, room_name);
     if (next == NULL) {
         sprintf(err_msg, "Le salon %s n'existe pas !\n", room_name);
