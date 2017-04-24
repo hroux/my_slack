@@ -17,8 +17,6 @@ void    handle_message(t_server *server, char *msg, t_client *sender) {
     t_chat_cmd chat_cmd;
     char **splitted_msg;
 
-    if (strcmp("OK Message recieved", msg) == 0)
-        return;
     splitted_msg = my_str_to_wordtab(msg);
     for (i = 0; g_chat_cmd[i].cmd != NULL; i++) {
         chat_cmd = g_chat_cmd[i];
@@ -31,7 +29,6 @@ void    handle_message(t_server *server, char *msg, t_client *sender) {
             return;
         }
     }
-
     sender->room->send(msg, sender, sender->room);
 }
 

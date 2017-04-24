@@ -9,7 +9,6 @@ int main() {
     else
       server->start(server);
     return 0;
-
     // TEST FREE ROOMS
 //    t_list *rooms = create_list(sizeof(t_room), free_room);
 //    t_room *r =  create_room(strdup("general"), 1);

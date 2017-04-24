@@ -45,7 +45,7 @@ void server_init(t_server *this) {
     this->start = start_server;
     this->terminate = terminate;
     this->broadcast = broadcast_msg;
-    general = create_room(strdup("general"), TRUE);
+    general = create_room(my_strdup("general"), TRUE);
     this->rooms->push(this->rooms, general);
     free(general);
 }
@@ -108,13 +108,14 @@ void create_client(t_server *this) {
         free(new_client);
         return;
     }
-    send(new_client->socket, "Welcome to my slack !\n", strlen("Welcome to my slack !\n"), 0);
+    send(new_client->socket, "Welcome|to|my|slack|!\n", my_strlen("Welcome|to|my|slack|!\n"), 0);
     get_callback_msg(new_client->socket);
-    send(new_client->socket, "Enter your name : ", strlen("Enter your name : "), 0);
+    send(new_client->socket, "Enter|your|name|:|", my_strlen("Enter|your|name|:|"), 0);
     get_callback_msg(new_client->socket);
     n = recv(new_client->socket, buffer, sizeof(buffer), 0);
+    send_callback_msg(new_client->socket);
     buffer[n - 1] = '\0';
-    new_client->name = strdup(buffer);
+    new_client->name = my_strdup(buffer);
     new_client->room = general;
     general->add_client(general, new_client);
     my_printf("Created new client with id => %d\n", new_client->socket);
@@ -148,6 +149,7 @@ int on_client_message(void *server, void *node) {
         }
         buffer[n] = '\0';
         my_printf("Message => %s\n", buffer);
+	send_callback_msg(c->socket);
         handle_message(s, buffer, c);
         FD_CLR(c->socket, &s->readfs);
     }
@@ -165,13 +167,14 @@ void broadcast_msg(t_server *this, char *msg) {
     t_client *client;
 
     room_node = this->rooms->head;
+    my_str_replace(msg, ' ', '|');
     while (room_node != NULL) {
 
         room = (t_room *) room_node->data;
         client_node = room->clients->head;
         while (client_node != NULL) {
             client = (t_client *) client_node->data;
-            send(client->socket, msg, strlen(msg), 0);
+            send(client->socket, msg, my_strlen(msg), 0);
             get_callback_msg(client->socket);
             client_node = client_node->next;
         }
@@ -198,12 +201,13 @@ void message_priver(t_server *this, t_message *message) {
             tmp = tmp->next;
         }
         if (client->socket > 0) {
-            full_msg = malloc(sizeof(char) * (strlen(message->auteur->name) + strlen(message->msg) + 1));
+            full_msg = malloc(sizeof(char) * (my_strlen(message->auteur->name) + strlen(message->msg) + 1));
             sprintf(full_msg, "%s : %s\n", message->auteur->name, message->msg);
-            send(client->socket, full_msg, strlen(full_msg), 0);
+	    my_str_replace(full_msg, ' ', '|');
+	    send(client->socket, full_msg, my_strlen(full_msg), 0);
             get_callback_msg(client->socket);
         } else {
-            send(message->auteur->socket, "Désolé mais cet utilisateur n'est pas connecté\n", 48, 0);
+            send(message->auteur->socket, "Désolé|mais|cet|utilisateur|n'est|pas|connecté\n", 48, 0);
             get_callback_msg(message->auteur->socket);
         }
     }
@@ -212,11 +216,11 @@ void message_priver(t_server *this, t_message *message) {
 /**
  *fonction permettant de recevoir le "OK Message receved du client"
  *à mettre après chaque send
- *
+ *TODO : logger les message en debbug
  */
-void get_callback_msg(int sock) {
-  char *rep_client;
-  int n;
+void	get_callback_msg(int sock) {
+  char	*rep_client;
+  int	n;
 
   if ((rep_client = malloc(sizeof(char) * 1024)) != NULL)
     {
@@ -226,6 +230,21 @@ void get_callback_msg(int sock) {
 	  rep_client[n] = '\0';
 	  my_printf("%s\n", rep_client);
 	}
+      free(rep_client);
+    }
+}
+
+/**
+ *fonction permettant de send le "OK Message receved au client"
+ *à mettre après chaque send
+ *TODO : test si no error + logger
+ */
+void	send_callback_msg(int sock) {
+  char	*rep_client;
+
+  if ((rep_client = my_strdup("OK|Message|received")) != NULL)
+    {
+      send(sock, rep_client, my_strlen(rep_client), 0);
       free(rep_client);
     }
 }

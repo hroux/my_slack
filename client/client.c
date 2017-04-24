@@ -5,7 +5,7 @@
 ** Login   <roux_a@etna-alternance.net>
 ** 
 ** Started on  Sun Apr  9 17:23:57 2017 ROUX Hugues
-** Last update Mon Apr 17 17:07:43 2017 ROUX Hugues
+** Last update Mon Apr 24 22:59:52 2017 ROUX Hugues
 */
 #include "includes/client.h"
 
@@ -116,5 +116,3 @@ int		go_client(t_client *this)
     }
   return n;
 }
-    
-  

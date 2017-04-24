@@ -5,7 +5,7 @@
 ** Login   <roux_a@etna-alternance.net>
 ** 
 ** Started on  Sun Apr  9 16:00:52 2017 ROUX Hugues
-** Last update Mon Apr 17 17:04:05 2017 ROUX Hugues
+** Last update Mon Apr 24 23:19:07 2017 ROUX Hugues
 */
 #include "includes/client.h"
 
@@ -56,7 +56,7 @@ int		main(int argc, char **argv)
 
   if ((config = malloc(sizeof(t_log_cfg))) == NULL)
     return 1;
-  config->level = LEVEL_INFO;
+  config->level = LEVEL_DEBUG;
   config->logfile = "./journalClient.log";
   Logger = create_logger(config);
   client = create_client();

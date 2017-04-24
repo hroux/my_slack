@@ -5,11 +5,12 @@
 ** Login   <roux_a@etna-alternance.net>
 ** 
 ** Started on  Sun Apr  9 22:36:18 2017 ROUX Hugues
-** Last update Wed Apr 19 11:11:52 2017 ROUX Hugues
+** Last update Tue Apr 25 00:12:27 2017 ROUX Hugues
 */
 #include "includes/client.h"
 
-/**
+/**OK Message received
+
  * Fonction permettant de lire un message 
  * sur stdin et de l'envoyer au serveur
  */
@@ -19,8 +20,7 @@ int	get_and_send_msg(t_client *this)
   int	result;
 
   result = -1;
-  msg = readLine();
-  if (msg == NULL)
+  if ((msg = readLine()) == NULL)
     return 5;
   if (my_strcmp("quit", msg) == 0)
     {
@@ -33,7 +33,13 @@ int	get_and_send_msg(t_client *this)
       help();
     }
   else if (my_strlen(msg) != 0)
-    result = my_send(this->sock, msg);
+    {
+      if ((result = my_send(this->sock, msg)) == -1)
+	{
+	  msg = malloc(sizeof(char) * 1024);
+	  result = my_recv(this->sock, msg, 0);
+	}
+    }
   return result;
 }
 
@@ -49,16 +55,8 @@ int	recv_and_print_msg(t_client *this)
   msg = malloc(sizeof(char) * 1024);
   if (msg == NULL)
     return 5;
-  if ((n = recv(this->sock, msg, 1023, 0)) < 0)
-    return 7;
-  if (n == 0)
-    {
-      free(msg);
-      return 8;
-    }
-  msg[n] = '\0';
-  my_printf("%s\n", msg);
-  free(msg);
+  if ((n = my_recv(this->sock, msg, 1)) > 0)
+    return n;
   my_send(this->sock, my_strdup("OK Message recieved"));
   return -1;
 }
@@ -106,9 +104,10 @@ void		print_error(int code)
 void	help()
 {
   my_printf("/*********Help*********/\n");
-  my_printf("join\t<name_salon>\tRejoindre un serveur\n");
-  my_printf("create\t<name_salon>\tCréer un serveur\n");
-  my_printf("delete\t<name_salon>\tSupprimer un serveur\n");
+  my_printf("join\t<name_salon>\tRejoindre un salon\n");
+  my_printf("create\t<name_salon>\tCréer un salon\n");
+  my_printf("delete\t<name_salon>\tSupprimer un salon\n");
+  my_printf("list\t\t\tAfficher la liste des salons\n");
   my_printf("private\t<name_user>\tEnvoyer un message privé\n");
   my_printf("help\t\t\tAfficher l'aide\n");
   my_printf("quit\t\t\tSe déconnecter\n");

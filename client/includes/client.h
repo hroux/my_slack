@@ -5,7 +5,7 @@
 ** Login   <roux_a@etna-alternance.net>
 ** 
 ** Started on  Mon Apr 17 17:24:29 2017 ROUX Hugues
-** Last update Wed Apr 19 10:59:04 2017 ROUX Hugues
+** Last update Tue Apr 25 00:20:05 2017 ROUX Hugues
 */
 
 #ifndef __MY_SLACK_CLIENT_H__
@@ -45,6 +45,8 @@ void		help();
 int		recv_and_print_msg(t_client *this);
 int		get_and_send_msg(t_client *this);
 int		my_send(int sock, char *msg);
+int		my_recv(int sock, char *msg, int print);
+void		my_str_replace(char *msg, char find, char replace);
 
 //Fonctions d'erreurs
 void		print_error(int code);

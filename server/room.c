@@ -71,19 +71,20 @@ void msg_salon(char *msg, t_client *sender, t_room *room) {
     if (tmp == NULL)
         return;
     if (sender != NULL) {
-        full_msg = malloc(sizeof(char *) * (strlen(sender->name) + strlen(msg)));
+        full_msg = malloc(sizeof(char *) * (my_strlen(sender->name) + my_strlen(msg)));
         sprintf(full_msg, "%s : %s", sender->name, msg);
     }
     else
         full_msg = msg;
+    my_str_replace(full_msg, ' ', '|');
     while (tmp != NULL) {
         client = (t_client *) tmp->data;
-
+	
         if (sender != NULL && strcmp(client->name, sender->name) != 0) {
-            send(client->socket, full_msg, strlen(full_msg), 0);
+            send(client->socket, full_msg, my_strlen(full_msg), 0);
             get_callback_msg(client->socket);
         } else {
-            send(client->socket, full_msg, strlen(full_msg), 0);
+            send(client->socket, full_msg, my_strlen(full_msg), 0);
             get_callback_msg(client->socket);
         }
 

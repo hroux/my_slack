@@ -75,6 +75,9 @@ int on_client_message(void *, void *);
 int bind_client(void *, void *);
 void broadcast_msg(t_server *, char *);
 char	**my_str_to_wordtab(char *str);
+void	my_str_replace(char *str, char find, char replace);
+char	*my_strdup(char *str);
+char	*my_strcpy(char *s1, char *s2);
 char    *decode_msg(char *buffer);
 int VerifMessage(char *buffer);
 t_message *Create_message(char *buffer, t_client *client);
@@ -101,7 +104,10 @@ void    show_rooms_cmd(t_server *, char *, t_client *);
 int  type_commande(char *buffer);
 
 t_server *server_fill(t_server *server);
+
+//FCT Protocol
 void	get_callback_msg(int sock);
+void	send_callback_msg(int sock);
 
 // UTILS
 t_list_item *get_client_node(t_list *, t_client *);

@@ -5,7 +5,7 @@
 ## Login   <roux_a@etna-alternance.net>
 ## 
 ## Started on  Mon Apr 17 17:38:47 2017 ROUX Hugues
-## Last update Mon Apr 24 21:36:03 2017 ROUX Hugues
+## Last update Mon Apr 24 23:10:48 2017 ROUX Hugues
 ##
 
 CC		=	gcc
@@ -25,7 +25,9 @@ SERVER_SRC	=	server/main.c \
 			server/my_strchr.c \
 			server/commands.c \
 			server/utils.c \
-			server/off.c
+			server/off.c \
+			server/my_strdup.c \
+			client/my_strcpy.c \
 
 CLIENT_SRC	=	client/main.c \
 			client/client.c \

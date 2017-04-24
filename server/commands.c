@@ -7,11 +7,14 @@ void    show_rooms_cmd(t_server *server, char *something, t_client *client) {
     char msg[MSG_LENGTH];
 
     room_node = server->rooms->head;
-    send(client->socket, "Liste des salons : \n", strlen("Liste des salons : \n"), 0);
+    send(client->socket, "Liste|des|salons|:\n", my_strlen("Liste|des|salons|:\n"), 0);
+    get_callback_msg(client->socket);
     while (room_node != NULL) {
         r = (t_room *) room_node->data;
         sprintf(msg, "#%s\n", r->name);
+	my_str_replace(msg, ' ', '|');
         send(client->socket, msg, strlen(msg), 0);
+	get_callback_msg(client->socket);
         room_node = room_node->next;
     }
 
@@ -26,21 +29,24 @@ void    join_room_cmd(t_server *server, char *room_name, t_client *client) {
 
     if (room_name == NULL || strlen(room_name) < 1) {
         sprintf(err_msg, "Le nom du salon ne doit pas etre vide !\n");
+	my_str_replace(err_msg, ' ', '|');
         send(client->socket, err_msg, my_strlen(err_msg), 0);
+	get_callback_msg(client->socket);
         return;
     }
 
     next = get_room_by_name(server->rooms, room_name);
     if (next == NULL) {
         sprintf(err_msg, "Le salon %s n'existe pas !\n", room_name);
+	my_str_replace(err_msg, ' ', '|');
         send(client->socket, err_msg, my_strlen(err_msg), 0);
+	get_callback_msg(client->socket);
         return;
     }
     my_printf("next name : %s\n", next->name);
     my_printf("client->room->name : %s\n", client->room->name);
     if (strcmp(next->name, client->room->name) == 0)
         return;
-
     client->room->remove_client(client->room, client);
     next->add_client(next, client);
 }
@@ -62,13 +68,17 @@ void    delete_room_cmd(t_server *server, char *room_name, t_client *client) {
     to_delete = get_room_by_name(server->rooms, room_name);
     if (to_delete == NULL) {
         sprintf(err_msg, "Le salon %s n'existe pas !\n", room_name);
+	my_str_replace(err_msg, ' ', '|');
         send(client->socket, err_msg, my_strlen(err_msg), 0);
+	get_callback_msg(client->socket);
         return;
     }
 
     if (to_delete->permanent) {
         sprintf(err_msg, "Le salon %s ne peut pas etre supprimé !\n", room_name);
+	my_str_replace(err_msg, ' ', '|');
         send(client->socket, err_msg, my_strlen(err_msg), 0);
+	get_callback_msg(client->socket);
         return;
     }
 
@@ -78,6 +88,22 @@ void    delete_room_cmd(t_server *server, char *room_name, t_client *client) {
         join_room_cmd(server, "general", c);
         client_node = (t_list_item *)client_node->next;
     }
-
     server->rooms->remove(server->rooms, get_room_node(server->rooms, to_delete), TRUE);
+}
+/**
+ * Un str_replace normal
+ */
+void	my_str_replace(char *str, char find, char replace)
+{
+  int	i;
+
+  i = 0;
+  if (str == NULL)
+    return;
+  while (str[i] != '\0')
+    {
+      if (str[i] == find)
+	str[i] = replace;
+      i++;
+    }
 }
