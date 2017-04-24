@@ -15,19 +15,23 @@ t_server *create_server() {
     server->socklen = sizeof(server->addr);
     server->protocol = getprotobyname(PROTOCOL);
     if (server->protocol == NULL) {
+        free(server);
         return NULL;
     }
     server->listener = socket(AF_INET, SOCK_STREAM, server->protocol->p_proto);
     if (server->listener == -1) {
+        free(server);
         return NULL;
     }
     server->addr.sin_family = AF_INET;
     server->addr.sin_addr.s_addr = INADDR_ANY;
     server->addr.sin_port = htons(PORT);
     if (bind(server->listener, (const struct sockaddr *) &server->addr, sizeof(server->addr)) == -1) {
+        free(server);
         return NULL;
     }
     if (listen(server->listener, BACKLOG) == -1) {
+        free(server);
         return NULL;
     }
     server_init(server);
@@ -37,12 +41,14 @@ t_server *create_server() {
 void server_init(t_server *this) {
     t_room *general;
 
-    this->rooms = create_list(sizeof(t_room), NULL);
-    this->clients = create_list(sizeof(t_client), NULL);
+    this->rooms = create_list(sizeof(t_room), free_room);
+    this->clients = create_list(sizeof(t_client), free_client);
     this->start = start_server;
+    this->terminate = terminate;
     this->broadcast = broadcast_msg;
     general = create_room(strdup("general"), TRUE);
     this->rooms->push(this->rooms, general);
+    free(general);
 }
 
 
@@ -63,6 +69,7 @@ int start_server(t_server *this) {
             FD_CLR(this->listener, &this->readfs);
         }
         if (FD_ISSET(0, &this->readfs)) {
+            this->terminate(this);
             close(4);
             return (EXIT_SUCCESS);
         }
@@ -115,6 +122,7 @@ void create_client(t_server *this) {
     sprintf(connect_msg, "User %s connected\n", new_client->name);
     this->clients->push(this->clients, new_client);
     broadcast_msg(this, connect_msg);
+    free(new_client);
 }
 
 int on_client_message(void *server, void *node) {

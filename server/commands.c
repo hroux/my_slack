@@ -10,7 +10,7 @@ void    show_rooms_cmd(t_server *server, char *something, t_client *client) {
     send(client->socket, "Liste des salons : \n", strlen("Liste des salons : \n"), 0);
     while (room_node != NULL) {
         r = (t_room *) room_node->data;
-        sprintf(msg, "%s\n", r->name);
+        sprintf(msg, "#%s\n", r->name);
         send(client->socket, msg, strlen(msg), 0);
         room_node = room_node->next;
     }
@@ -47,7 +47,7 @@ void    join_room_cmd(t_server *server, char *room_name, t_client *client) {
 void    create_room_cmd(t_server *server, char *room_name, t_client *client) {
     t_room *new;
 
-    new = create_room(room_name, FALSE);
+    new = create_room(room_name, 0);
     server->rooms->push(server->rooms, new);
     join_room_cmd(server, room_name, client);
 }

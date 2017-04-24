@@ -1,8 +1,5 @@
 #include <stdlib.h>
 #include <memory.h>
-#include <sys/select.h>
-#include <unistd.h>
-#include <errno.h>
 #include "includes/server.h"
 
 t_chat_cmd g_chat_cmd[] = {
@@ -19,9 +16,9 @@ void    handle_message(t_server *server, char *msg, t_client *sender) {
     int i;
     t_chat_cmd chat_cmd;
     char **splitted_msg;
-    t_server *s;
 
-    s = server;
+    if (strcmp("OK Message recieved", msg) == 0)
+        return;
     splitted_msg = my_str_to_wordtab(msg);
     for (i = 0; g_chat_cmd[i].cmd != NULL; i++) {
         chat_cmd = g_chat_cmd[i];
@@ -38,7 +35,7 @@ void    handle_message(t_server *server, char *msg, t_client *sender) {
     sender->room->send(msg, sender, sender->room);
 }
 
-int VerifMessage(char *buffer) {
+/*int VerifMessage(char *buffer) {
     char **MessageDecomposer;
     char **Commande;
     int i;
@@ -136,4 +133,4 @@ char *decode_msg(char *buffer) {
         i = i + 1;
     }
     return message;
-}
+}*/

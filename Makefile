@@ -24,7 +24,8 @@ SERVER_SRC	=	server/main.c \
 			server/my_strncpy.c\
 			server/my_strchr.c \
 			server/commands.c \
-			server/utils.c
+			server/utils.c \
+			server/off.c
 
 CLIENT_SRC	=	client/main.c \
 			client/client.c \

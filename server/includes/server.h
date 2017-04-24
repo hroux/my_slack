@@ -32,7 +32,7 @@ typedef struct s_server {
 
     int     (*start)();
     void    (*broadcast)(struct s_server *, char *);
-
+    void    (*terminate)(struct s_server *);
 } t_server;
 
 typedef struct s_room {
@@ -65,7 +65,9 @@ typedef struct s_chat_cmd {
     t_handler handler;
 } t_chat_cmd;
 
+// SERVER
 t_server    *create_server();
+void    terminate(t_server *);
 void    server_init(t_server *);
 int start_server(t_server *);
 void create_client(t_server *);
@@ -105,5 +107,11 @@ void	get_callback_msg(int sock);
 t_list_item *get_client_node(t_list *, t_client *);
 t_room *get_room_by_name(t_list *rooms, char *name);
 t_list_item *get_room_node(t_list *, t_room *);
+
+// FREE
+//int free_client(void *node, void *arg);
+//int free_room(void *node, void *arg);
+void free_client(void *);
+void free_room(void *);
 
 #endif // __MY_SLACK_SERVER_H__
