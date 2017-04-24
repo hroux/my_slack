@@ -35,10 +35,10 @@ void		remove_node_at_index(t_list *this, int index)
     {
       return;
     }
-  remove_node(this, tmp);
+  remove_node(this, tmp, 1);
 }
 
-void		remove_node(t_list *this, t_list_item *item)
+void		remove_node(t_list *this, t_list_item *item, int remove_data)
 {
   if (item->prev && item->next)
     {
@@ -61,9 +61,11 @@ void		remove_node(t_list *this, t_list_item *item)
       this->tail = NULL;
     }
   this->size--;
-  if (this->free_data)
-    this->free_data(item->data);
-  free(item->data);
+  if (remove_data) {
+    if (this->free_data)
+      this->free_data(item->data);
+    free(item->data);
+  }
   free(item);
   reset_indexes(this);
 }

@@ -5,7 +5,7 @@
 ## Login   <roux_a@etna-alternance.net>
 ## 
 ## Started on  Mon Apr 17 17:38:47 2017 ROUX Hugues
-## Last update Wed Apr 19 10:34:57 2017 ROUX Hugues
+## Last update Mon Apr 24 21:36:03 2017 ROUX Hugues
 ##
 
 CC		=	gcc
@@ -20,9 +20,12 @@ SERVER_SRC	=	server/main.c \
 			server/my_strlen.c \
 			server/server.c \
 			server/message.c \
-			server/salon.c \
+			server/room.c \
 			server/my_strncpy.c\
-			server/my_strchr.c
+			server/my_strchr.c \
+			server/commands.c \
+			server/utils.c \
+			server/off.c
 
 CLIENT_SRC	=	client/main.c \
 			client/client.c \
@@ -51,6 +54,9 @@ server	:	$(SERVER_OBJ)
 
 client	:	$(CLIENT_OBJ)
 		$(CC) $(CLIENT_OBJ) $(LIBS) -o $(CLIENT_NAME) $(CFLAGS)
+
+lib	:
+		make -C libs/libmy
 
 clean	:
 		$(RM) $(SERVER_OBJ)

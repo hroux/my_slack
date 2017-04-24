@@ -34,6 +34,7 @@ void		list_init(t_list *this)
   this->clear = list_clear;
   this->free = list_free;
   this->get = get_node_at_index;
+  this->find = get_node_by_data;
   this->remove_at = remove_node_at_index;
   this->remove = remove_node;
   this->length = list_length;
@@ -71,7 +72,7 @@ void		list_push(t_list *this, void *item)
 
 void		list_pop(t_list *this)
 {
-  this->remove(this, this->tail);
+  this->remove(this, this->tail, 1);
 }
 
 void		list_clear(t_list *this)

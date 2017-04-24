@@ -48,3 +48,16 @@ void		list_copy(t_list *this, t_list *dest) {
     tmp = tmp->next;
   }
 }
+
+t_list_item   *get_node_by_data(t_list *this,void *data) {
+  t_list_item *tmp;
+
+  tmp = this->head;
+  while (tmp != NULL) {
+    if (tmp->data == data)
+      return tmp;
+    tmp = tmp->next;
+  }
+
+  return NULL;
+}
