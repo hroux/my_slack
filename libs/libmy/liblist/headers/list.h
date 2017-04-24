@@ -34,7 +34,7 @@ typedef struct s_list {
   void(*clear)(struct s_list*);
   void(*free)(struct s_list*);
   t_list_item*(*get)(struct s_list*, int index);
-  void(*remove)(struct s_list*, t_list_item *);
+  void(*remove)(struct s_list*, t_list_item *, int);
   void(*remove_at)(struct s_list*, int index);
   int(*length)(struct s_list*);
   void(*for_each)(struct s_list*, t_iterator, void *);
@@ -52,7 +52,7 @@ void list_free(t_list *);
 t_list_item *get_node_at_index(t_list *, int);
 t_list_item *get_node_by_data(t_list *, void *);
 void remove_node_at_index(t_list *, int);
-void remove_node(t_list *, t_list_item *);
+void remove_node(t_list *, t_list_item *, int);
 int list_length(t_list *);
 void reset_indexes(t_list *);
 void list_for_each(t_list *this, t_iterator iterator, void *arg);

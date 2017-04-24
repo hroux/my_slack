@@ -72,7 +72,7 @@ void		list_push(t_list *this, void *item)
 
 void		list_pop(t_list *this)
 {
-  this->remove(this, this->tail);
+  this->remove(this, this->tail, 1);
 }
 
 void		list_clear(t_list *this)
