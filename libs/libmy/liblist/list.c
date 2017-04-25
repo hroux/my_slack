@@ -84,7 +84,7 @@ void		list_clear(t_list *this)
     this->head = current->next;
     if (this->free_data)
       this->free_data(current->data);
-    free(current->data);
+//    free(current->data);
     free(current);
     this->size--;
   }
