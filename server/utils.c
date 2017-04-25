@@ -45,5 +45,21 @@ t_room *get_room_by_name(t_list *rooms, char *name) {
     }
 
     return NULL;
+}
 
+
+/**
+ * Un str_replace normal
+ */
+void my_str_replace(char *str, char find, char replace) {
+    int i;
+
+    i = 0;
+    if (str == NULL)
+        return;
+    while (str[i] != '\0') {
+        if (str[i] == find)
+            str[i] = replace;
+        i++;
+    }
 }

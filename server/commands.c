@@ -1,7 +1,7 @@
 #include "includes/server.h"
 #include <string.h>
 
-void    show_rooms_cmd(t_server *server, char *something, t_client *client) {
+void show_rooms_cmd(t_server *server, char *something, t_client *client) {
     t_list_item *room_node;
     t_room *r;
     char msg[MSG_LENGTH];
@@ -12,9 +12,9 @@ void    show_rooms_cmd(t_server *server, char *something, t_client *client) {
     while (room_node != NULL) {
         r = (t_room *) room_node->data;
         sprintf(msg, "#%s\n", r->name);
-	my_str_replace(msg, ' ', '|');
+        my_str_replace(msg, ' ', '|');
         send(client->socket, msg, strlen(msg), 0);
-	get_callback_msg(client->socket);
+        get_callback_msg(client->socket);
         room_node = room_node->next;
     }
 
@@ -23,24 +23,24 @@ void    show_rooms_cmd(t_server *server, char *something, t_client *client) {
     }
 }
 
-void    join_room_cmd(t_server *server, char *room_name, t_client *client) {
+void join_room_cmd(t_server *server, char *room_name, t_client *client) {
     t_room *next;
     char err_msg[MSG_LENGTH];
 
     if (room_name == NULL || strlen(room_name) < 1) {
         sprintf(err_msg, "Le nom du salon ne doit pas etre vide !\n");
-	my_str_replace(err_msg, ' ', '|');
+        my_str_replace(err_msg, ' ', '|');
         send(client->socket, err_msg, my_strlen(err_msg), 0);
-	get_callback_msg(client->socket);
+        get_callback_msg(client->socket);
         return;
     }
 
     next = get_room_by_name(server->rooms, room_name);
     if (next == NULL) {
         sprintf(err_msg, "Le salon %s n'existe pas !\n", room_name);
-	my_str_replace(err_msg, ' ', '|');
+        my_str_replace(err_msg, ' ', '|');
         send(client->socket, err_msg, my_strlen(err_msg), 0);
-	get_callback_msg(client->socket);
+        get_callback_msg(client->socket);
         return;
     }
     my_printf("next name : %s\n", next->name);
@@ -51,15 +51,23 @@ void    join_room_cmd(t_server *server, char *room_name, t_client *client) {
     next->add_client(next, client);
 }
 
-void    create_room_cmd(t_server *server, char *room_name, t_client *client) {
+void create_room_cmd(t_server *server, char *room_name, t_client *client) {
     t_room *new;
+    char err_msg[MSG_LENGTH];
+
+    if (room_name == NULL || my_strlen(room_name) < 1) {
+        sprintf(err_msg, "Room name cannot be empty !\n");
+        send(client->socket, err_msg, my_strlen(err_msg), 0);
+        get_callback_msg(client->socket);
+        return;
+    }
 
     new = create_room(room_name, 0);
     server->rooms->push(server->rooms, new);
     join_room_cmd(server, room_name, client);
 }
 
-void    delete_room_cmd(t_server *server, char *room_name, t_client *client) {
+void delete_room_cmd(t_server *server, char *room_name, t_client *client) {
     t_room *to_delete;
     t_list_item *client_node;
     t_client *c;
@@ -68,17 +76,16 @@ void    delete_room_cmd(t_server *server, char *room_name, t_client *client) {
     to_delete = get_room_by_name(server->rooms, room_name);
     if (to_delete == NULL) {
         sprintf(err_msg, "Le salon %s n'existe pas !\n", room_name);
-	my_str_replace(err_msg, ' ', '|');
+        my_str_replace(err_msg, ' ', '|');
         send(client->socket, err_msg, my_strlen(err_msg), 0);
-	get_callback_msg(client->socket);
+        get_callback_msg(client->socket);
         return;
     }
-
     if (to_delete->permanent) {
         sprintf(err_msg, "Le salon %s ne peut pas etre supprimé !\n", room_name);
-	my_str_replace(err_msg, ' ', '|');
+        my_str_replace(err_msg, ' ', '|');
         send(client->socket, err_msg, my_strlen(err_msg), 0);
-	get_callback_msg(client->socket);
+        get_callback_msg(client->socket);
         return;
     }
 
@@ -86,24 +93,7 @@ void    delete_room_cmd(t_server *server, char *room_name, t_client *client) {
     while (client_node != NULL) {
         c = (t_client *) client_node->data;
         join_room_cmd(server, "general", c);
-        client_node = (t_list_item *)client_node->next;
+        client_node = (t_list_item *) client_node->next;
     }
-    server->rooms->remove(server->rooms, get_room_node(server->rooms, to_delete), TRUE);
-}
-/**
- * Un str_replace normal
- */
-void	my_str_replace(char *str, char find, char replace)
-{
-  int	i;
-
-  i = 0;
-  if (str == NULL)
-    return;
-  while (str[i] != '\0')
-    {
-      if (str[i] == find)
-	str[i] = replace;
-      i++;
-    }
+    server->rooms->remove(server->rooms, get_room_node(server->rooms, to_delete), 1);
 }
