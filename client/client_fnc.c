@@ -1,17 +1,18 @@
 /*
 ** client_fnc.c for  in /home/hugues/Documents/C/my_slack/client
-** 
+**
 ** Made by ROUX Hugues
 ** Login   <roux_a@etna-alternance.net>
-** 
+**
 ** Started on  Sun Apr  9 22:36:18 2017 ROUX Hugues
-** Last update Tue Apr 25 00:12:27 2017 ROUX Hugues
+** Last update Wed Apr 26 18:57:26 2017 VRIGNAUD camille
 */
 #include "includes/client.h"
 
-/**OK Message received
-
- * Fonction permettant de lire un message 
+/*
+ * Message received
+ *
+ * Fonction permettant de lire un message
  * sur stdin et de l'envoyer au serveur
  */
 int	get_and_send_msg(t_client *this)
@@ -44,7 +45,7 @@ int	get_and_send_msg(t_client *this)
 }
 
 /**
- * Fonction permettant de lire un message 
+ * Fonction permettant de lire un message
  * envoyé et de le printer
  */
 int	recv_and_print_msg(t_client *this)
@@ -87,7 +88,7 @@ char		**init_error()
 void		print_error(int code)
 {
   char		**tab_error;
-   
+
   if (code < 0 || code > 9)
     return;
   tab_error = init_error();
@@ -99,7 +100,6 @@ void		print_error(int code)
 
 /*
  *Fonction permettant d'afficher la liste des commandes
- *
  */
 void	help()
 {

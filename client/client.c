@@ -1,11 +1,11 @@
 /*
 ** client.c for  in /home/hugues/Documents/C/my_slack/client
-** 
+**
 ** Made by ROUX Hugues
 ** Login   <roux_a@etna-alternance.net>
-** 
+**
 ** Started on  Sun Apr  9 17:23:57 2017 ROUX Hugues
-** Last update Mon Apr 24 22:59:52 2017 ROUX Hugues
+** Last update Wed Apr 26 18:56:19 2017 VRIGNAUD camille
 */
 #include "includes/client.h"
 
@@ -81,7 +81,7 @@ int			init_client(t_client *this)
 void		start_client(t_client *this)
 {
   int		err;
-  
+
   err = init_client(this);
   if (err > 0)
     {
@@ -93,7 +93,7 @@ void		start_client(t_client *this)
 }
 
 /**
- *Fonction réalisant une boncle inf 
+ *Fonction réalisant une boncle inf
  *pour envoyer et recevoir les messages
  */
 int		go_client(t_client *this)

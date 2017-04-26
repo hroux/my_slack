@@ -1,11 +1,11 @@
 /*
 ** msg.c for  in /home/hugues/Documents/C/my_slack/client
-** 
+**
 ** Made by ROUX Hugues
 ** Login   <roux_a@etna-alternance.net>
-** 
+**
 ** Started on  Mon Apr 17 17:25:53 2017 ROUX Hugues
-** Last update Tue Apr 25 00:20:44 2017 ROUX Hugues
+** Last update Wed Apr 26 18:58:07 2017 VRIGNAUD camille
 */
 #include "includes/client.h"
 
@@ -35,7 +35,7 @@ int	my_send(int sock, char *msg)
 int	my_recv(int sock, char *msg, int print)
 {
   int	n;
-  
+
   if (msg == NULL)
     return 5;
   if ((n = recv(sock, msg, 1023, 0)) < 0)
