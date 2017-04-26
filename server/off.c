@@ -12,8 +12,8 @@
 #include <stdlib.h>
 
 void terminate(t_server *server) {
-  server->clients->free(server->clients);
-  server->rooms->free(server->rooms);
+  //server->clients->free(server->clients);
+  //server->rooms->free(server->rooms);
   server->protocol = NULL;
   server->clients = NULL;
   server->rooms = NULL;
@@ -21,9 +21,8 @@ void terminate(t_server *server) {
 }
 
 void		free_client(void *arg) {
-  t_client	*c = (t_client *)arg;
-
-  free(c);
+  arg = NULL;
+  free(arg);
 }
 
 void		free_room(void *arg) {
