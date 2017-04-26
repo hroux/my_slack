@@ -1,3 +1,13 @@
+/*
+** create_room.c for my_slack in /home/camille/slack/my_slack
+**
+** Made by VRIGNAUD camille
+** Login   <vrigna_c@etna-alternance.net>
+**
+** Started on  Wed Apr 26 21:30:50 2017 VRIGNAUD camille
+** Last update Wed Apr 26 21:31:03 2017 VRIGNAUD camille
+*/
+
 #include <memory.h>
 #include <string.h>
 #include "includes/server.h"
