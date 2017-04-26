@@ -95,5 +95,5 @@ void delete_room_cmd(t_server *server, char *room_name, t_client *client) {
         join_room_cmd(server, "general", c);
         client_node = (t_list_item *) client_node->next;
     }
-    server->rooms->remove(server->rooms, get_room_node(server->rooms, to_delete), 1);
+    server->rooms->remove(server->rooms, get_room_node(server->rooms, to_delete), 0);
 }
