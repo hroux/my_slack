@@ -7,6 +7,7 @@ t_chat_cmd g_chat_cmd[] = {
         {"join", join_room_cmd},
         {"create", create_room_cmd},
         {"delete", delete_room_cmd},
+        {"private", message_priver},
         {NULL, NULL}
 };
 
@@ -16,12 +17,18 @@ void    handle_message(t_server *server, char *msg, t_client *sender) {
     int i;
     t_chat_cmd chat_cmd;
     char **splitted_msg;
+    char *message;
 
     splitted_msg = my_str_to_wordtab(msg);
     for (i = 0; g_chat_cmd[i].cmd != NULL; i++) {
         chat_cmd = g_chat_cmd[i];
         if (strcmp(splitted_msg[0], chat_cmd.cmd) == 0) {
-            if (splitted_msg[1] != NULL)
+            if ((strcmp(splitted_msg[0], "private") == 0) && (splitted_msg[1] != NULL))
+                {
+                  message = decode_msg(splitted_msg);
+                  chat_cmd.handler(server, message, sender);
+                 }
+            else if (splitted_msg[1] != NULL)
                 chat_cmd.handler(server, splitted_msg[1], sender);
             else
                 chat_cmd.handler(server, NULL, sender);
@@ -107,17 +114,17 @@ t_message *Create_message(char *buffer, t_client *client) {
               message->msg, message->commande, message->cible, message->auteur);
     return message;
 }
-
-char *decode_msg(char *buffer) {
-    int i = 2;
+*/
+char *decode_msg(char **message_decomposer) {
+    int i = 1;
     int j = 0;
     char *message;
-    char **message_decomposer;
 
-    message_decomposer = my_str_to_wordtab(buffer);
+    if (message_decomposer == NULL || message_decomposer[i] == NULL)
+        return NULL;
     while (message_decomposer[j] != NULL)
         j = j + 1;
-    message = malloc(sizeof(message_decomposer[i]) * j);
+    message = malloc(sizeof(message_decomposer[i]) * 1024);
     if (message == NULL)
         return NULL;
     strcpy(message, message_decomposer[i]);
@@ -126,8 +133,7 @@ char *decode_msg(char *buffer) {
         strcat(message, " ");
         strcat(message, message_decomposer[i]);
         strcat(message, " ");
-        my_printf("%s\n", message);
         i = i + 1;
     }
     return message;
-}*/
+}

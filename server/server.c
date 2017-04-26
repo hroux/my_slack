@@ -149,7 +149,7 @@ int on_client_message(void *server, void *node) {
         }
         buffer[n] = '\0';
         my_printf("Message => %s\n", buffer);
-	send_callback_msg(c->socket);
+	      send_callback_msg(c->socket);
         handle_message(s, buffer, c);
         FD_CLR(c->socket, &s->readfs);
     }
@@ -183,34 +183,56 @@ void broadcast_msg(t_server *this, char *msg) {
     }
 }
 
+int test_message_private(char ***message_decomposer, char** message_final, char *err_msg, t_client *sender, char *message) {
+*message_decomposer =  my_str_to_wordtab(message);
+*message_final = decode_msg(*message_decomposer);
+if ((message == NULL || my_strlen(message) < 1) ||
+ (*message_final == NULL || my_strlen(*message_final) < 1)) {
+    sprintf(err_msg, "name or/and message cannot be empty !\n");
+    send(sender->socket, err_msg, my_strlen(err_msg), 0);
+    get_callback_msg(sender->socket);
+    return 1;
+}
+else
+  return 0;
+}
+
+void envoie_message_priver(char **full_msg, t_client *sender, char *message_final, t_client *client)
+{
+*full_msg = malloc(sizeof(char) * (my_strlen(sender->name) + my_strlen(message_final) + 1024));
+sprintf(*full_msg, "%s : %s\n", sender->name, message_final);
+my_str_replace(*full_msg, ' ', '|');
+send(client->socket, *full_msg, my_strlen(*full_msg), 0);
+get_callback_msg(client->socket);
+}
 /**
  * hroux : Rajout d'une réception après le send pour recevoir le "OK message receiv"
  */
-void message_priver(t_server *this, t_message *message) {
+void message_priver(t_server *this, char *message, t_client *sender) {
+    char **message_decomposer;
+    char *message_final;
     char *full_msg;
+    t_client *client;
     t_list_item *tmp;
     t_client *test;
-    t_client *client;
+    char err_msg[MSG_LENGTH];
 
+    client = NULL;
+    if (test_message_private(&message_decomposer, &message_final, err_msg, sender, message) == 1)
+        return;
     tmp = this->clients->head;
-    if (strcmp(message->commande, "private") == 0) {
-        while (tmp != NULL) {
+      while (tmp != NULL) {
             test = (t_client *) tmp->data;
-            if (strcmp(test->name, message->cible) == 0)
+            if (strcmp(test->name, message_decomposer[0]) == 0)
                 client = test;
             tmp = tmp->next;
         }
-        if (client->socket > 0) {
-            full_msg = malloc(sizeof(char) * (my_strlen(message->auteur->name) + strlen(message->msg) + 1));
-            sprintf(full_msg, "%s : %s\n", message->auteur->name, message->msg);
-	    my_str_replace(full_msg, ' ', '|');
-	    send(client->socket, full_msg, my_strlen(full_msg), 0);
-            get_callback_msg(client->socket);
-        } else {
-            send(message->auteur->socket, "Désolé|mais|cet|utilisateur|n'est|pas|connecté\n", 48, 0);
-            get_callback_msg(message->auteur->socket);
+        if (client != NULL)
+        envoie_message_priver(&full_msg, sender, message_final, client);
+        else {
+            send(sender->socket, "This|user|is|not|connect\n", 48, 0);
+            get_callback_msg(sender->socket);
         }
-    }
 }
 
 /**
@@ -248,4 +270,3 @@ void	send_callback_msg(int sock) {
       free(rep_client);
     }
 }
-  

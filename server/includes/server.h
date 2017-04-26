@@ -78,10 +78,10 @@ char	**my_str_to_wordtab(char *str);
 void	my_str_replace(char *str, char find, char replace);
 char	*my_strdup(char *str);
 char	*my_strcpy(char *s1, char *s2);
-char    *decode_msg(char *buffer);
+char    *decode_msg(char **message_decomposer);
 int VerifMessage(char *buffer);
 t_message *Create_message(char *buffer, t_client *client);
-void message_priver(t_server *this, t_message *message);
+void message_priver(t_server *server, char *msg, t_client *sender);
 char **fill_commande();
 
 // ROOM
