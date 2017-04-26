@@ -5,7 +5,7 @@
 ** Login   <vrigna_c@etna-alternance.net>
 **
 ** Started on  Wed Apr 26 15:09:14 2017 VRIGNAUD camille
-** Last update Wed Apr 26 15:12:38 2017 VRIGNAUD camille
+** Last update Wed Apr 26 19:04:31 2017 VRIGNAUD camille
 */
 
 #include <memory.h>
@@ -42,7 +42,7 @@ void	add_client(t_room *this, t_client *client) {
     return;
   client->room = this;
   this->clients->push(this->clients, client);
-  my_printf("%s vient de rentrer dans le salon => %s\n",
+  my_printf("User %s joined the room => %s\n",
 	    client->name, this->name);
   sprintf(connect_msg, "User %s joined the room\n", client->name);
   msg_salon(connect_msg, client, this);

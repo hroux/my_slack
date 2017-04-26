@@ -5,7 +5,7 @@
 ** Login   <vrigna_c@etna-alternance.net>
 **
 ** Started on  Wed Apr 26 15:12:50 2017 VRIGNAUD camille
-** Last update Wed Apr 26 15:23:15 2017 VRIGNAUD camille
+** Last update Wed Apr 26 19:07:01 2017 VRIGNAUD camille
 */
 
 #include <memory.h>
@@ -40,12 +40,12 @@ t_server	*create_server() {
 	   sizeof(server->addr)) == -1)
     {
       free(server);
-      return NULL;
+      return (NULL);
     }
   if (listen(server->listener, BACKLOG) == -1)
     {
       free(server);
-      return NULL;
+      return (NULL);
     }
   server_init(server);
   return (server);
@@ -171,8 +171,10 @@ int		on_client_message(void *server, void *node) {
 }
 
 /**
- * hroux : Rajout d'une réception après un send pour recevoir le "OK message receiv"
- * iricanf: Correction du broadcast, la fonction permet d'envoyer un message dans tous les salons du serveur
+ * hroux : Rajout d'une réception après un send pour recevoir le
+ * "OK message receiv"
+ * iricanf: Correction du broadcast, la fonction permet d'envoyer
+ * un message dans tous les salons du serveur
  */
 void		broadcast_msg(t_server *this, char *msg) {
   t_list_item	*room_node;
