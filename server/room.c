@@ -18,9 +18,6 @@ t_room		*create_room(char *name, int permanent) {
   room = malloc(sizeof(t_room));
   if (room == NULL)
     return NULL;
-  //    room->name = malloc(sizeof(char) * strlen(name));
-  //    if (room->name == NULL)
-  //        return NULL;
   room->name = name;
   room->permanent = permanent;
   init_room(room);
@@ -69,9 +66,28 @@ void		remove_client(t_room *this, t_client *client) {
   free(connect_msg);
 }
 
+void loop_salon(t_list_item	*tmp, char *full_msg, t_client *sender)
+{
+  t_client	*client;
+  while (tmp != NULL)
+  {
+  client = (t_client *) tmp->data;
+  if (sender != NULL && strcmp(client->name, sender->name) != 0)
+    {
+send(client->socket, full_msg, my_strlen(full_msg), 0);
+get_callback_msg(client->socket);
+    }
+  else
+    {
+send(client->socket, full_msg, my_strlen(full_msg), 0);
+get_callback_msg(client->socket);
+    }
+  tmp = tmp->next;
+   }
+}
+
 void		msg_salon(char *msg, t_client *sender, t_room *room) {
   t_list_item	*tmp;
-  t_client	*client;
   char		*full_msg;
 
   tmp = room->clients->head;
@@ -86,20 +102,7 @@ void		msg_salon(char *msg, t_client *sender, t_room *room) {
   else
     full_msg = msg;
   my_str_replace(full_msg, ' ', '|');
-  while (tmp != NULL) {
-    client = (t_client *) tmp->data;
-    if (sender != NULL && strcmp(client->name, sender->name) != 0)
-      {
-	send(client->socket, full_msg, my_strlen(full_msg), 0);
-	get_callback_msg(client->socket);
-      }
-    else
-      {
-	send(client->socket, full_msg, my_strlen(full_msg), 0);
-	get_callback_msg(client->socket);
-      }
-    tmp = tmp->next;
-  }
+  loop_salon(tmp, full_msg, sender);
   if (sender != NULL)
     free(full_msg);
 }

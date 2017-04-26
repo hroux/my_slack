@@ -12,8 +12,6 @@
 #include <stdlib.h>
 
 void terminate(t_server *server) {
-  //server->clients->free(server->clients);
-  //server->rooms->free(server->rooms);
   server->protocol = NULL;
   server->clients = NULL;
   server->rooms = NULL;

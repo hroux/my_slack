@@ -80,6 +80,13 @@ void		create_room_cmd(t_server *server,
   join_room_cmd(server, room_name, client);
 }
 
+void    envoie_err(char *err_msg, t_client *client)
+{
+	my_str_replace(err_msg, ' ', '|');
+	send(client->socket, err_msg, my_strlen(err_msg), 0);
+	get_callback_msg(client->socket);
+}
+
 void		delete_room_cmd(t_server *server, char *room_name,
 				t_client *client) {
   t_room	*to_delete;
@@ -92,24 +99,18 @@ void		delete_room_cmd(t_server *server, char *room_name,
 	to_delete = NULL;
   if (to_delete == NULL) {
     sprintf(err_msg, "Le salon %s n'existe pas !\n", room_name);
-    my_str_replace(err_msg, ' ', '|');
-    send(client->socket, err_msg, my_strlen(err_msg), 0);
-    get_callback_msg(client->socket);
+    envoie_err(err_msg,client);
     return;
   }
   if (to_delete->permanent) {
     sprintf(err_msg, "Le salon %s ne peut pas etre supprimé !\n", room_name);
-    my_str_replace(err_msg, ' ', '|');
-    send(client->socket, err_msg, my_strlen(err_msg), 0);
-    get_callback_msg(client->socket);
+    envoie_err(err_msg,client);
     return;
   }
   client_node = to_delete->clients->head;
   while (client_node != NULL) {
     c = (t_client *) client_node->data;
-		client_node = (t_list_item *) client_node->next;
-		c->room = get_room_by_name(server->rooms, "general");
-    join_room_cmd(server, "general", c);
+		envoie_err(err_msg,c);
   }
   server->rooms->remove(server->rooms, get_room_node(server->rooms, to_delete), 0);
 }
