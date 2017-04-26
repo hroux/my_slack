@@ -1,3 +1,13 @@
+/*
+** create_client.c for my_slack in /home/camille/slack/my_slack/server
+**
+** Made by VRIGNAUD camille
+** Login   <vrigna_c@etna-alternance.net>
+**
+** Started on  Wed Apr 26 21:10:16 2017 VRIGNAUD camille
+** Last update Wed Apr 26 21:10:27 2017 VRIGNAUD camille
+*/
+
 #include <memory.h>
 #include <sys/select.h>
 #include <unistd.h>

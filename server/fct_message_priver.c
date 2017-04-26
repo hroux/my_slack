@@ -1,3 +1,13 @@
+/*
+** fct_message_priver.c for my_slack in /home/camille/slack/my_slack/server
+*
+** Made by VRIGNAUD camille
+** Login   <vrigna_c@etna-alternance.net>
+**
+** Started on  Wed Apr 26 21:09:52 2017 VRIGNAUD camille
+** Last update Wed Apr 26 21:10:05 2017 VRIGNAUD camille
+*/
+
 #include <memory.h>
 #include <sys/select.h>
 #include <unistd.h>

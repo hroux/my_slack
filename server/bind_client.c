@@ -1,3 +1,13 @@
+/*
+** bind_client.c for my_slack in /home/camille/slack/my_slack/server
+**
+** Made by VRIGNAUD camille
+** Login   <vrigna_c@etna-alternance.net>
+**
+** Started on  Wed Apr 26 21:08:12 2017 VRIGNAUD camille
+** Last update Wed Apr 26 21:08:28 2017 VRIGNAUD camille
+*/
+
 #include <memory.h>
 #include <sys/select.h>
 #include <unistd.h>
@@ -5,7 +15,7 @@
 #include "includes/server.h"
 
 void  fill_bind_client(t_client *new_client, char *buffer,
-   t_room *general, t_server *this)
+		       t_room *general, t_server *this)
 {
   int n;
   char		connect_msg[64];

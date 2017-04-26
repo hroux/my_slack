@@ -5,7 +5,7 @@
 ** Login   <vrigna_c@etna-alternance.net>
 **
 ** Started on  Wed Apr 26 15:12:50 2017 VRIGNAUD camille
-** Last update Wed Apr 26 19:07:01 2017 VRIGNAUD camille
+** Last update Wed Apr 26 21:12:05 2017 VRIGNAUD camille
 */
 
 #include <memory.h>
@@ -23,16 +23,16 @@ t_server	*create_server() {
   server->socklen = sizeof(server->addr);
   server->protocol = getprotobyname(PROTOCOL);
   if (server->protocol == NULL)
-      return NULL;
+    return NULL;
   server->listener = socket(AF_INET, SOCK_STREAM, server->protocol->p_proto);
   if (server->listener == -1)
-      return NULL;
+    return NULL;
   fill_server(server);
   if (bind(server->listener, (const struct sockaddr *) &server->addr,
 	   sizeof(server->addr)) == -1)
-      return (NULL);
+    return (NULL);
   if (listen(server->listener, BACKLOG) == -1)
-      return (NULL);
+    return (NULL);
   server_init(server);
   return (server);
 }

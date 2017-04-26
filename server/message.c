@@ -5,7 +5,7 @@
 ** Login   <vrigna_c@etna-alternance.net>
 **
 ** Started on  Wed Apr 26 15:07:03 2017 VRIGNAUD camille
-** Last update Wed Apr 26 19:02:44 2017 VRIGNAUD camille
+** Last update Wed Apr 26 21:10:44 2017 VRIGNAUD camille
 */
 
 #include <stdlib.h>
@@ -13,12 +13,12 @@
 #include "includes/server.h"
 
 t_chat_cmd g_chat_cmd[] = {
-        {"list", show_rooms_cmd},
-        {"join", join_room_cmd},
-        {"create", create_room_cmd},
-        {"delete", delete_room_cmd},
-        {"private", message_priver},
-        {NULL, NULL}
+  {"list", show_rooms_cmd},
+  {"join", join_room_cmd},
+  {"create", create_room_cmd},
+  {"delete", delete_room_cmd},
+  {"private", message_priver},
+  {NULL, NULL}
 };
 
 

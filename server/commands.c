@@ -5,7 +5,7 @@
 ** Login   <vrigna_c@etna-alternance.net>
 **
 ** Started on  Wed Apr 26 14:54:09 2017 VRIGNAUD camille
-** Last update Thu Apr 27 20:06:24 2017 IRICANIN Filip
+** Last update Wed Apr 26 21:09:28 2017 VRIGNAUD camille
 */
 
 #include "includes/server.h"
@@ -94,7 +94,7 @@ void		delete_room_cmd(t_server *server, char *room_name,
   t_client	*c;
   char		err_msg[MSG_LENGTH];
 
-  
+
   if (room_name == NULL || my_strlen(room_name) < 1) {
     sprintf(err_msg, "Room name cannot be empty !\n");
     send(client->socket, err_msg, my_strlen(err_msg), 0);

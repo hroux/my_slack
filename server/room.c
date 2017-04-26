@@ -5,7 +5,7 @@
 ** Login   <vrigna_c@etna-alternance.net>
 **
 ** Started on  Wed Apr 26 15:09:14 2017 VRIGNAUD camille
-** Last update Wed Apr 26 19:04:31 2017 VRIGNAUD camille
+** Last update Wed Apr 26 21:11:20 2017 VRIGNAUD camille
 */
 
 #include <memory.h>
@@ -70,20 +70,20 @@ void loop_salon(t_list_item	*tmp, char *full_msg, t_client *sender)
 {
   t_client	*client;
   while (tmp != NULL)
-  {
-  client = (t_client *) tmp->data;
-  if (sender != NULL && strcmp(client->name, sender->name) != 0)
     {
-send(client->socket, full_msg, my_strlen(full_msg), 0);
-get_callback_msg(client->socket);
+      client = (t_client *) tmp->data;
+      if (sender != NULL && strcmp(client->name, sender->name) != 0)
+	{
+	  send(client->socket, full_msg, my_strlen(full_msg), 0);
+	  get_callback_msg(client->socket);
+	}
+      else
+	{
+	  send(client->socket, full_msg, my_strlen(full_msg), 0);
+	  get_callback_msg(client->socket);
+	}
+      tmp = tmp->next;
     }
-  else
-    {
-send(client->socket, full_msg, my_strlen(full_msg), 0);
-get_callback_msg(client->socket);
-    }
-  tmp = tmp->next;
-   }
 }
 
 void		msg_salon(char *msg, t_client *sender, t_room *room) {
