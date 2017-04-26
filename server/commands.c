@@ -88,7 +88,6 @@ void delete_room_cmd(t_server *server, char *room_name, t_client *client) {
         get_callback_msg(client->socket);
         return;
     }
-
     client_node = to_delete->clients->head;
     while (client_node != NULL) {
         c = (t_client *) client_node->data;
