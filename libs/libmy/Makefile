@@ -41,7 +41,7 @@ fclean	:	clean
 		$(RM) $(DNAME)
 		make -C ./libparse/ fclean
 		make -C ./liblist/ fclean
-		make -C ./libprintf/ clean
+		make -C ./libprintf/ fclean
 		make -C ./liblog/ fclean
 
 re	:	fclean ALL

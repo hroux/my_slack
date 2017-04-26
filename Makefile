@@ -48,8 +48,9 @@ CLIENT_OBJ	=	$(CLIENT_SRC:%.c=%.o)
 RM		=	rm -rf
 
 
-ALL	:	server client
+ALL	:	lib server client
 
+osx	:	lib_mac server client
 
 server	:	$(SERVER_OBJ)
 		$(CC) $(SERVER_OBJ) $(LIBS) -o $(SERVER_NAME) $(CFLAGS)
@@ -60,11 +61,16 @@ client	:	$(CLIENT_OBJ)
 lib	:
 		make -C libs/libmy
 
+lib_mac	:	
+		make -C libs/libmy lib_mac
+
 clean	:
+		make -C libs/libmy clean
 		$(RM) $(SERVER_OBJ)
 		$(RM) $(CLIENT_OBJ)
 
 fclean	:	clean
+		make -C libs/libmy fclean
 		$(RM) $(SERVER_NAME)
 		$(RM) $(CLIENT_NAME)
 

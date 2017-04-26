@@ -23,7 +23,8 @@ clean	:
 		$(RM) $(OBJ)
 
 fclean  :	clean
-		$(RM) $(NAME)
+		$(RM) $(SNAME)
+		$(RM) $(DNAME)
 
 lib	:	$(OBJ)
 		ar r $(SNAME) $(OBJ) $(LIBS)
