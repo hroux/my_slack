@@ -86,8 +86,10 @@ void		delete_room_cmd(t_server *server, char *room_name,
   t_list_item	*client_node;
   t_client	*c;
   char		err_msg[MSG_LENGTH];
-
+	if (room_name != NULL)
   to_delete = get_room_by_name(server->rooms, room_name);
+	else
+	to_delete = NULL;
   if (to_delete == NULL) {
     sprintf(err_msg, "Le salon %s n'existe pas !\n", room_name);
     my_str_replace(err_msg, ' ', '|');
