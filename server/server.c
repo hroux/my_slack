@@ -14,6 +14,12 @@
 #include <errno.h>
 #include "includes/server.h"
 
+void fill_server(t_server *server) {
+  server->addr.sin_family = AF_INET;
+  server->addr.sin_addr.s_addr = INADDR_ANY;
+  server->addr.sin_port = htons(PORT);
+}
+
 t_server	*create_server() {
   t_server	*server;
 
@@ -23,30 +29,16 @@ t_server	*create_server() {
   server->socklen = sizeof(server->addr);
   server->protocol = getprotobyname(PROTOCOL);
   if (server->protocol == NULL)
-    {
-      free(server);
       return NULL;
-    }
   server->listener = socket(AF_INET, SOCK_STREAM, server->protocol->p_proto);
   if (server->listener == -1)
-    {
-      free(server);
       return NULL;
-    }
-  server->addr.sin_family = AF_INET;
-  server->addr.sin_addr.s_addr = INADDR_ANY;
-  server->addr.sin_port = htons(PORT);
+  fill_server(server);
   if (bind(server->listener, (const struct sockaddr *) &server->addr,
 	   sizeof(server->addr)) == -1)
-    {
-      free(server);
       return (NULL);
-    }
   if (listen(server->listener, BACKLOG) == -1)
-    {
-      free(server);
       return (NULL);
-    }
   server_init(server);
   return (server);
 }
@@ -92,6 +84,24 @@ int	start_server(t_server *this) {
   }
 }
 
+void  fill_bind_client(t_client *new_client, char *buffer,
+   t_room *general, t_server *this)
+{
+  int n;
+  char		connect_msg[64];
+
+  n = recv(new_client->socket, buffer, sizeof(buffer), 0);
+  send_callback_msg(new_client->socket);
+  buffer[n - 1] = '\0';
+  new_client->name = my_strdup(buffer);
+  new_client->room = general;
+  general->add_client(general, new_client);
+  my_printf("Created new client with id => %d\n", new_client->socket);
+  sprintf(connect_msg, "User %s connected\n", new_client->name);
+  this->clients->push(this->clients, new_client);
+  broadcast_msg(this, connect_msg);
+}
+
 int		bind_client(void *server, void *node) {
   t_client	*c;
   t_server	*s;
@@ -105,9 +115,7 @@ int		bind_client(void *server, void *node) {
 void		create_client(t_server *this) {
   t_room	*general;
   t_client	*new_client;
-  char		connect_msg[64];
   char		buffer[32];
-  int		n;
 
   general = (t_room *) this->rooms->head->data;
   new_client = malloc(sizeof(t_client));
@@ -126,17 +134,17 @@ void		create_client(t_server *this) {
   send(new_client->socket, "Enter|your|name|:|",
        my_strlen("Enter|your|name|:|"), 0);
   get_callback_msg(new_client->socket);
-  n = recv(new_client->socket, buffer, sizeof(buffer), 0);
-  send_callback_msg(new_client->socket);
-  buffer[n - 1] = '\0';
-  new_client->name = my_strdup(buffer);
-  new_client->room = general;
-  general->add_client(general, new_client);
-  my_printf("Created new client with id => %d\n", new_client->socket);
-  sprintf(connect_msg, "User %s connected\n", new_client->name);
-  this->clients->push(this->clients, new_client);
-  broadcast_msg(this, connect_msg);
+  fill_bind_client(new_client, buffer, general, this);
   free(new_client);
+}
+
+void fill_on_client(char *buffer, t_client *c, t_server *s, int n)
+{
+  buffer[n] = '\0';
+  my_printf("Message => %s\n", buffer);
+  send_callback_msg(c->socket);
+  handle_message(s, buffer, c);
+  FD_CLR(c->socket, &s->readfs);
 }
 
 int		on_client_message(void *server, void *node) {
@@ -161,11 +169,7 @@ int		on_client_message(void *server, void *node) {
 	broadcast_msg(s, deco_msg);
 	return (1);
       }
-    buffer[n] = '\0';
-    my_printf("Message => %s\n", buffer);
-    send_callback_msg(c->socket);
-    handle_message(s, buffer, c);
-    FD_CLR(c->socket, &s->readfs);
+   fill_on_client(buffer, c, s, n);
   }
   return (1);
 }
@@ -227,6 +231,18 @@ void envoie_message_priver(char **full_msg, t_client *sender,
   send(client->socket, *full_msg, my_strlen(*full_msg), 0);
   get_callback_msg(client->socket);
 }
+
+void loop_message_priver(t_list_item *tmp, char ***message_decomposer, t_client **client)
+{
+    t_client	*test;
+  while (tmp != NULL)
+  {
+  test = (t_client *) tmp->data;
+  if (strcmp(test->name, *message_decomposer[0]) == 0)
+  *client = test;
+  tmp = tmp->next;
+  }
+}
 /**
  * hroux : Rajout d'une réception après le send pour recevoir le "OK message receiv"
  */
@@ -237,7 +253,6 @@ void		message_priver(t_server *this, char *message,
   char		*full_msg;
   t_client	*client;
   t_list_item	*tmp;
-  t_client	*test;
   char		err_msg[MSG_LENGTH];
 
   client = NULL;
@@ -245,13 +260,7 @@ void		message_priver(t_server *this, char *message,
 			   &message_final, err_msg, sender, message) == 1)
     return;
   tmp = this->clients->head;
-  while (tmp != NULL)
-    {
-      test = (t_client *) tmp->data;
-      if (strcmp(test->name, message_decomposer[0]) == 0)
-	client = test;
-      tmp = tmp->next;
-    }
+  loop_message_priver(tmp, &message_decomposer, &client);
   if (client != NULL)
     envoie_message_priver(&full_msg, sender, message_final, client);
   else
