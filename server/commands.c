@@ -39,8 +39,7 @@ void		join_room_cmd(t_server *server,
 			      char *room_name, t_client *client) {
   t_room	*next;
   char		err_msg[MSG_LENGTH];
-
-  if (room_name == NULL || strlen(room_name) < 1) {
+  if (room_name == NULL || my_strlen(room_name) < 1) {
     sprintf(err_msg, "Le nom du salon ne doit pas etre vide !\n");
     my_str_replace(err_msg, ' ', '|');
     send(client->socket, err_msg, my_strlen(err_msg), 0);
@@ -62,6 +61,7 @@ void		join_room_cmd(t_server *server,
     return;
   client->room->remove_client(client->room, client);
   next->add_client(next, client);
+	my_printf("client->room->name : %s\n", client->room->name);
 }
 
 void		create_room_cmd(t_server *server,
@@ -105,8 +105,9 @@ void		delete_room_cmd(t_server *server, char *room_name,
   client_node = to_delete->clients->head;
   while (client_node != NULL) {
     c = (t_client *) client_node->data;
+		client_node = (t_list_item *) client_node->next;
+		c->room = get_room_by_name(server->rooms, "general");
     join_room_cmd(server, "general", c);
-    client_node = (t_list_item *) client_node->next;
   }
   server->rooms->remove(server->rooms, get_room_node(server->rooms, to_delete), 0);
 }

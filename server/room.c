@@ -61,8 +61,7 @@ void		remove_client(t_room *this, t_client *client) {
     my_printf("Found client => ", ((t_client *) client_node->data)->name);
   if (connect_msg == NULL)
     return;
-  my_printf("%d \n", this->clients->size);
-  my_printf("%s vient de quitter le salon => %s\n", client->name, this->name);
+  my_printf("%s a just quit salon => %s\n", client->name, this->name);
   sprintf(connect_msg, "User %s disconnected to %s\n",
 	  client->name, this->name);
   this->send(connect_msg, NULL, this);

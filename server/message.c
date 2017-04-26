@@ -130,7 +130,7 @@ char	*decode_msg(char **message_decomposer) {
   int	j = 0;
   char	*message;
 
-  if (message_decomposer == NULL || message_decomposer[i] == NULL)
+  if (message_decomposer == NULL || message_decomposer[0] == NULL || message_decomposer[i] == NULL)
     return NULL;
   while (message_decomposer[j] != NULL)
     j = j + 1;
