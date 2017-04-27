@@ -14,12 +14,6 @@
 #include <errno.h>
 #include "includes/server.h"
 
-void fill_server(t_server *server) {
-  server->addr.sin_family = AF_INET;
-  server->addr.sin_addr.s_addr = INADDR_ANY;
-  server->addr.sin_port = htons(PORT);
-}
-
 t_server	*create_server() {
   t_server	*server;
 
@@ -84,96 +78,6 @@ int	start_server(t_server *this) {
   }
 }
 
-void  fill_bind_client(t_client *new_client, char *buffer,
-   t_room *general, t_server *this)
-{
-  int n;
-  char		connect_msg[64];
-
-  n = recv(new_client->socket, buffer, sizeof(buffer), 0);
-  send_callback_msg(new_client->socket);
-  buffer[n - 1] = '\0';
-  new_client->name = my_strdup(buffer);
-  new_client->room = general;
-  general->add_client(general, new_client);
-  my_printf("Created new client with id => %d\n", new_client->socket);
-  sprintf(connect_msg, "User %s connected\n", new_client->name);
-  this->clients->push(this->clients, new_client);
-  broadcast_msg(this, connect_msg);
-}
-
-int		bind_client(void *server, void *node) {
-  t_client	*c;
-  t_server	*s;
-
-  c = (t_client *) ((t_list_item *) node)->data;
-  s = (t_server *) server;
-  FD_SET(c->socket, &s->readfs);
-  return (1);
-}
-
-void		create_client(t_server *this) {
-  t_room	*general;
-  t_client	*new_client;
-  char		buffer[32];
-
-  general = (t_room *) this->rooms->head->data;
-  new_client = malloc(sizeof(t_client));
-  if (new_client == NULL)
-    return;
-  new_client->name = NULL;
-  new_client->socket = accept(this->listener, (struct sockaddr *) &this->cli, &this->socklen);
-  if (new_client->socket < 0)
-    {
-      free(new_client);
-      return;
-    }
-  send(new_client->socket, "Welcome|to|my|slack|!\n",
-       my_strlen("Welcome|to|my|slack|!\n"), 0);
-  get_callback_msg(new_client->socket);
-  send(new_client->socket, "Enter|your|name|:|",
-       my_strlen("Enter|your|name|:|"), 0);
-  get_callback_msg(new_client->socket);
-  fill_bind_client(new_client, buffer, general, this);
-  free(new_client);
-}
-
-void fill_on_client(char *buffer, t_client *c, t_server *s, int n)
-{
-  buffer[n] = '\0';
-  my_printf("Message => %s\n", buffer);
-  send_callback_msg(c->socket);
-  handle_message(s, buffer, c);
-  FD_CLR(c->socket, &s->readfs);
-}
-
-int		on_client_message(void *server, void *node) {
-  char		buffer[MSG_LENGTH];
-  char		deco_msg[128];
-  int		n;
-  t_server	*s;
-  t_client	*c;
-
-  s = (t_server *) server;
-  c = (t_client *) ((t_list_item *) node)->data;
-  if (FD_ISSET(c->socket, &s->readfs)) {
-    my_printf("Message from %s\n", c->name);
-    n = recv(c->socket, buffer, sizeof(buffer), 0);
-    if (n == 0 || n == -1)
-      {
-	my_printf("User %s disconnected\n", c->name);
-	sprintf(deco_msg, "User %s disconnected\n", c->name);
-	close(c->socket);
-	c->room->remove_client(c->room, c);
-	s->clients->remove(s->clients, get_client_node(s->clients, c), 1);
-	broadcast_msg(s, deco_msg);
-	return (1);
-      }
-   fill_on_client(buffer, c, s, n);
-  }
-  return (1);
-}
-
 /**
  * hroux : Rajout d'une réception après un send pour recevoir le
  * "OK message receiv"
@@ -204,45 +108,7 @@ void		broadcast_msg(t_server *this, char *msg) {
     }
 }
 
-int test_message_private(char ***message_decomposer, char** message_final,
-			 char *err_msg, t_client *sender, char *message)
-{
-  *message_decomposer =  my_str_to_wordtab(message);
-  *message_final = decode_msg(*message_decomposer);
-  if ((message == NULL || my_strlen(message) < 1) ||
-      (*message_final == NULL || my_strlen(*message_final) < 1))
-    {
-      sprintf(err_msg, "name or/and message cannot be empty !\n");
-      send(sender->socket, err_msg, my_strlen(err_msg), 0);
-      get_callback_msg(sender->socket);
-      return 1;
-    }
-  else
-    return 0;
-}
 
-void envoie_message_priver(char **full_msg, t_client *sender,
-			   char *message_final, t_client *client)
-{
-  *full_msg = malloc(sizeof(char) * (my_strlen(sender->name) +
-				     my_strlen(message_final) + 1024));
-  sprintf(*full_msg, "%s : %s\n", sender->name, message_final);
-  my_str_replace(*full_msg, ' ', '|');
-  send(client->socket, *full_msg, my_strlen(*full_msg), 0);
-  get_callback_msg(client->socket);
-}
-
-void loop_message_priver(t_list_item *tmp, char ***message_decomposer, t_client **client)
-{
-    t_client	*test;
-  while (tmp != NULL)
-  {
-  test = (t_client *) tmp->data;
-  if (strcmp(test->name, *message_decomposer[0]) == 0)
-  *client = test;
-  tmp = tmp->next;
-  }
-}
 /**
  * hroux : Rajout d'une réception après le send pour recevoir le "OK message receiv"
  */
@@ -267,41 +133,5 @@ void		message_priver(t_server *this, char *message,
     {
       send(sender->socket, "This|user|is|not|connect\n", 48, 0);
       get_callback_msg(sender->socket);
-    }
-}
-
-/**
- *fonction permettant de recevoir le "OK Message receved du client"
- *à mettre après chaque send
- *TODO : logger les message en debbug
- */
-void	get_callback_msg(int sock) {
-  char	*rep_client;
-  int	n;
-
-  if ((rep_client = malloc(sizeof(char) * 1024)) != NULL)
-    {
-      n = recv(sock, rep_client, 1023, 0);
-      if (n > 0)
-	{
-	  rep_client[n] = '\0';
-	  my_printf("%s\n", rep_client);
-	}
-      free(rep_client);
-    }
-}
-
-/**
- *fonction permettant de send le "OK Message receved au client"
- *à mettre après chaque send
- *TODO : test si no error + logger
- */
-void	send_callback_msg(int sock) {
-  char	*rep_client;
-
-  if ((rep_client = my_strdup("OK|Message|received")) != NULL)
-    {
-      send(sock, rep_client, my_strlen(rep_client), 0);
-      free(rep_client);
     }
 }

@@ -83,6 +83,22 @@ int VerifMessage(char *buffer);
 t_message *Create_message(char *buffer, t_client *client);
 void message_priver(t_server *server, char *msg, t_client *sender);
 char **fill_commande();
+int test_message_private(char ***message_decomposer, char** message_final,
+			 char *err_msg, t_client *sender, char *message);
+void envoie_message_priver(char **full_msg, t_client *sender,
+        char *message_final, t_client *client);
+void loop_message_priver(t_list_item *tmp, char ***message_decomposer,
+        t_client **client);
+void  fill_bind_client(t_client *new_client, char *buffer,
+        t_room *general, t_server *this);
+int		bind_client(void *server, void *node);
+void		create_client(t_server *this);
+void fill_on_client(char *buffer, t_client *c, t_server *s, int n);
+int		on_client_message(void *server, void *node);
+void	get_callback_msg(int sock);
+void	send_callback_msg(int sock);
+void fill_server(t_server *server); 
+
 
 // ROOM
 t_room	*create_room(char *, int);

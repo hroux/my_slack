@@ -1,9 +1,9 @@
 ##
 ## Makefile for  in /home/hugues/Documents/C/my_slack
-## 
+##
 ## Made by ROUX Hugues
 ## Login   <roux_a@etna-alternance.net>
-## 
+##
 ## Started on  Mon Apr 17 17:38:47 2017 ROUX Hugues
 ## Last update Mon Apr 24 23:10:48 2017 ROUX Hugues
 ##
@@ -27,6 +27,10 @@ SERVER_SRC	=	server/main.c \
 			server/utils.c \
 			server/off.c \
 			server/my_strdup.c \
+			server/fct_message_priver.c \
+			server/create_client.c \
+			server/bind_client.c \
+			server/calback.c \
 			client/my_strcpy.c \
 
 CLIENT_SRC	=	client/main.c \
@@ -61,7 +65,7 @@ client	:	$(CLIENT_OBJ)
 lib	:
 		make -C libs/libmy
 
-lib_mac	:	
+lib_mac	:
 		make -C libs/libmy lib_mac
 
 clean	:
