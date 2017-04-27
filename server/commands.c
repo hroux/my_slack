@@ -5,7 +5,7 @@
 ** Login   <vrigna_c@etna-alternance.net>
 **
 ** Started on  Wed Apr 26 14:54:09 2017 VRIGNAUD camille
-** Last update Wed Apr 26 21:09:28 2017 VRIGNAUD camille
+** Last update Thu Apr 27 22:01:11 2017 IRICANIN Filip
 */
 
 #include "includes/server.h"
@@ -91,6 +91,7 @@ void		delete_room_cmd(t_server *server, char *room_name,
 				t_client *client) {
   t_room	*to_delete;
   t_list_item	*client_node;
+  t_list_item   *tmp;
   t_client	*c;
   char		err_msg[MSG_LENGTH];
 
@@ -114,9 +115,10 @@ void		delete_room_cmd(t_server *server, char *room_name,
   }
   client_node = to_delete->clients->head;
   while (client_node != NULL) {
+    tmp = client_node->next;
     c = (t_client *) client_node->data;
     join_room_cmd(server, "general", c);
-    client_node = client_node->next;
+    client_node = tmp;
   }
   server->rooms->remove(server->rooms, get_room_node(server->rooms, to_delete), 0);
 }
