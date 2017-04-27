@@ -5,7 +5,7 @@
 ** Login   <vrigna_c@etna-alternance.net>
 **
 ** Started on  Wed Apr 26 14:54:09 2017 VRIGNAUD camille
-** Last update Wed Apr 26 15:04:58 2017 VRIGNAUD camille
+** Last update Thu Apr 27 20:06:24 2017 IRICANIN Filip
 */
 
 #include "includes/server.h"
@@ -93,10 +93,15 @@ void		delete_room_cmd(t_server *server, char *room_name,
   t_list_item	*client_node;
   t_client	*c;
   char		err_msg[MSG_LENGTH];
-	if (room_name != NULL)
+
+  
+  if (room_name == NULL || my_strlen(room_name) < 1) {
+    sprintf(err_msg, "Room name cannot be empty !\n");
+    send(client->socket, err_msg, my_strlen(err_msg), 0);
+    get_callback_msg(client->socket);
+    return;
+  }
   to_delete = get_room_by_name(server->rooms, room_name);
-	else
-	to_delete = NULL;
   if (to_delete == NULL) {
     sprintf(err_msg, "Le salon %s n'existe pas !\n", room_name);
     envoie_err(err_msg,client);
@@ -110,7 +115,8 @@ void		delete_room_cmd(t_server *server, char *room_name,
   client_node = to_delete->clients->head;
   while (client_node != NULL) {
     c = (t_client *) client_node->data;
-		envoie_err(err_msg,c);
+    join_room_cmd(server, "general", c);
+    client_node = client_node->next;
   }
   server->rooms->remove(server->rooms, get_room_node(server->rooms, to_delete), 0);
 }
