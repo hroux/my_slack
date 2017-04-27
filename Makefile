@@ -31,7 +31,8 @@ SERVER_SRC	=	server/main.c \
 			server/create_client.c \
 			server/bind_client.c \
 			server/calback.c \
-			client/my_strcpy.c \
+			server/create_room.c \
+			server/my_strcpy.c \
 
 CLIENT_SRC	=	client/main.c \
 			client/client.c \

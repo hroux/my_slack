@@ -57,7 +57,7 @@ void		join_room_cmd(t_server *server,
   }
   my_printf("next name : %s\n", next->name);
   my_printf("client->room->name : %s\n", client->room->name);
-  if (strcmp(next->name, client->room->name) == 0)
+  if (my_strcmp(next->name, client->room->name) == 0)
     return;
   client->room->remove_client(client->room, client);
   next->add_client(next, client);
