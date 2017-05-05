@@ -1,4 +1,4 @@
-# my_slack
+# my_slack.c
 
 To start my_slack, first you need gcc and make.
 
